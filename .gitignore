@@ -1,0 +1,9 @@
+node_modules/
+.env
+dist/
+.DS_Store
+*.log
+build
+# Never commit these
+backend/.env
+frontend/.env

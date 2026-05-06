@@ -1,0 +1,268 @@
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
+import { SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import api from '../lib/api';
+import ProductCard from '../components/product/ProductCard';
+import { Spinner } from '../components/ui';
+
+const CATEGORIES = ['Floral Bliss', 'Vanilla Dreams', 'Festive Lights', 'Ocean Breeze', 'Luxury Gold Collection'];
+const SORTS = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'popular', label: 'Most Popular' },
+  { value: 'rating', label: 'Top Rated' },
+  { value: 'price-asc', label: 'Price: Low → High' },
+  { value: 'price-desc', label: 'Price: High → Low' },
+];
+const PRICE_RANGES = [
+  { label: 'Under ₹500', min: '', max: '500' },
+  { label: '₹500 – ₹1000', min: '500', max: '1000' },
+  { label: '₹1000 – ₹2000', min: '1000', max: '2000' },
+  { label: 'Above ₹2000', min: '2000', max: '' },
+];
+
+export default function Products() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+
+  // Multi-select: stored as comma-separated string in URL
+  const categoryParam = searchParams.get('category') || '';
+  const selectedCategories = categoryParam ? categoryParam.split(',') : [];
+  const search = searchParams.get('search') || '';
+  const sort = searchParams.get('sort') || 'newest';
+  const minPrice = searchParams.get('minPrice') || '';
+  const maxPrice = searchParams.get('maxPrice') || '';
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['products', { categoryParam, search, sort, minPrice, maxPrice, page }],
+    queryFn: () => api.get('/products', {
+      params: { category: categoryParam, search, sort, minPrice, maxPrice, page, limit: 12 },
+    }).then(r => r.data),
+    keepPreviousData: true,
+  });
+
+  const setParam = (key, value) => {
+    const p = new URLSearchParams(searchParams);
+    if (value) p.set(key, value); else p.delete(key);
+    setSearchParams(p);
+    setPage(1);
+  };
+
+  const toggleCategory = (cat) => {
+    const next = selectedCategories.includes(cat)
+      ? selectedCategories.filter(c => c !== cat)
+      : [...selectedCategories, cat];
+    setParam('category', next.join(','));
+  };
+
+  const removeCategory = (cat) => {
+    const next = selectedCategories.filter(c => c !== cat);
+    setParam('category', next.join(','));
+  };
+
+  const clearAll = () => { setSearchParams({}); setPage(1); };
+  const hasFilters = categoryParam || search || minPrice || maxPrice;
+
+  return (
+    <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] ">
+      {/* Page Header */}
+      <div className="bg-white dark:bg-[#111111] border-b border-gray-100 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold text-gold uppercase tracking-widest mb-1">
+                {categoryParam ? 'Collection' : search ? 'Search Results' : 'All Products'}
+              </p>
+              <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#111111] dark:text-[#f0ece4]">
+                {selectedCategories.length === 1
+                  ? selectedCategories[0]
+                  : selectedCategories.length > 1
+                  ? `${selectedCategories.length} Collections`
+                  : search ? `"${search}"` : 'All Candles'}
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                {data?.total || 0} candles found
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {/* Sort */}
+              <div className="relative">
+                <select
+                  value={sort}
+                  onChange={e => setParam('sort', e.target.value)}
+                  className="appearance-none pl-4 pr-10 py-2.5 text-sm font-medium border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#1c1c1e] text-[#111111] dark:text-[#f0ece4] outline-none focus:border-gold cursor-pointer transition-colors">
+                  {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                </select>
+                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+              {/* Filter Toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-2 rounded-xl transition-all ${showFilters ? 'border-gold bg-gold text-white' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1c1c1e] text-[#111111] dark:text-[#f0ece4] hover:border-gold'}`}>
+                <SlidersHorizontal size={15} />
+                Filters
+                {hasFilters && (
+                  <span className="w-5 h-5 bg-white/30 text-current rounded-full text-[10px] font-bold flex items-center justify-center">
+                    {selectedCategories.length + (minPrice || maxPrice ? 1 : 0)}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Active Filter Chips */}
+          <AnimatePresence>
+            {hasFilters && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                {selectedCategories.map(cat => (
+                  <span key={cat} className="inline-flex items-center gap-1.5 px-3 py-1 bg-gold/10 text-gold text-xs font-semibold rounded-full border border-gold/20">
+                    {cat}
+                    <button onClick={() => removeCategory(cat)}><X size={12} /></button>
+                  </span>
+                ))}
+                {(minPrice || maxPrice) && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gold/10 text-gold text-xs font-semibold rounded-full border border-gold/20">
+                    ₹{minPrice || '0'} – ₹{maxPrice || '∞'}
+                    <button onClick={() => { setParam('minPrice', ''); setParam('maxPrice', ''); }}><X size={12} /></button>
+                  </span>
+                )}
+                <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium">
+                  Clear all
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.aside
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: 260 }}
+                exit={{ opacity: 0, width: 0 }}
+                className="shrink-0 overflow-hidden">
+                <div className="w-64 space-y-6">
+
+                  {/* Category Multi-Select */}
+                  <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-bold text-sm text-[#111111] dark:text-[#f0ece4] uppercase tracking-wider">Category</h3>
+                      {selectedCategories.length > 0 && (
+                        <button onClick={() => setParam('category', '')}
+                          className="text-xs text-gold hover:underline font-medium">
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      {CATEGORIES.map(c => {
+                        const checked = selectedCategories.includes(c);
+                        return (
+                          <label key={c} onClick={() => toggleCategory(c)}
+                            className="flex items-center gap-3 cursor-pointer group">
+                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${checked ? 'bg-gold border-gold' : 'border-gray-300 dark:border-gray-600 group-hover:border-gold'}`}>
+                              {checked && (
+                                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                  <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              )}
+                            </div>
+                            <span className={`text-sm transition-colors leading-tight ${checked ? 'text-gold font-semibold' : 'text-gray-600 dark:text-gray-400 group-hover:text-gold'}`}>
+                              {c}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    {selectedCategories.length > 0 && (
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                        {selectedCategories.length} of {CATEGORIES.length} selected
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Price Filter */}
+                  <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-bold text-sm text-[#111111] dark:text-[#f0ece4] uppercase tracking-wider">Price Range</h3>
+                      {(minPrice || maxPrice) && (
+                        <button onClick={() => { setParam('minPrice', ''); setParam('maxPrice', ''); }}
+                          className="text-xs text-gold hover:underline font-medium">
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      {PRICE_RANGES.map(r => {
+                        const active = minPrice === r.min && maxPrice === r.max;
+                        return (
+                          <button key={r.label}
+                            onClick={() => { setParam('minPrice', active ? '' : r.min); setParam('maxPrice', active ? '' : r.max); }}
+                            className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all flex items-center justify-between ${active ? 'bg-gold text-white font-semibold' : 'text-gray-600 dark:text-gray-400 hover:bg-gold/10 hover:text-gold'}`}>
+                            {r.label}
+                            {active && (
+                              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <input type="number" placeholder="Min ₹" value={minPrice} onChange={e => setParam('minPrice', e.target.value)}
+                        className="w-full text-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 bg-transparent text-[#111111] dark:text-[#f0ece4] outline-none focus:border-gold" />
+                      <input type="number" placeholder="Max ₹" value={maxPrice} onChange={e => setParam('maxPrice', e.target.value)}
+                        className="w-full text-sm border-2 border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 bg-transparent text-[#111111] dark:text-[#f0ece4] outline-none focus:border-gold" />
+                    </div>
+                  </div>
+
+                </div>
+              </motion.aside>
+            )}
+          </AnimatePresence>
+
+          {/* Products Grid */}
+          <div className="flex-1 min-w-0">
+            {isLoading ? <Spinner /> : (
+              <>
+                <div className={`grid gap-5 ${showFilters ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}>
+                  {data?.products?.map(p => <ProductCard key={p._id} product={p} />)}
+                </div>
+
+                {data?.products?.length === 0 && (
+                  <div className="text-center py-24">
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl">🕯️</span>
+                    </div>
+                    <h3 className="font-serif text-xl font-bold text-[#111111] dark:text-[#f0ece4] mb-2">No candles found</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Try adjusting your filters</p>
+                    <button onClick={clearAll} className="text-gold font-semibold hover:underline text-sm">Clear all filters</button>
+                  </div>
+                )}
+
+                {data?.pages > 1 && (
+                  <div className="flex justify-center gap-2 mt-12">
+                    {[...Array(data.pages)].map((_, i) => (
+                      <button key={i} onClick={() => setPage(i + 1)}
+                        className={`w-10 h-10 rounded-full text-sm font-bold transition-all ${page === i + 1 ? 'bg-gold text-white shadow-lg shadow-gold/30' : 'bg-white dark:bg-[#1c1c1e] text-gray-600 dark:text-gray-400 border-2 border-gray-200 dark:border-gray-700 hover:border-gold hover:text-gold'}`}>
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
