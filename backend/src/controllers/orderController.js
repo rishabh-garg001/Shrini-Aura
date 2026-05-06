@@ -4,7 +4,8 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { sendOrderConfirmation, sendOrderStatusUpdate } = require('../services/emailService');
 
-const razorpay = new Razorpay({
+// Initialize lazily so env vars are available at request time
+const getRazorpay = () => new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
@@ -35,7 +36,7 @@ exports.createOrder = async (req, res, next) => {
     const taxPrice = Math.round((itemsPrice - discount) * 0.18);
     const totalPrice = itemsPrice - discount + shippingPrice + taxPrice;
 
-    const razorpayOrder = await razorpay.orders.create({
+    const razorpayOrder = await getRazorpay().orders.create({
       amount: totalPrice * 100,
       currency: 'INR',
       receipt: `receipt_${Date.now()}`,
