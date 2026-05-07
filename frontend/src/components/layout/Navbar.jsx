@@ -159,7 +159,7 @@ export default function Navbar() {
                         </div>
                         {[
                           { to: '/profile', icon: Settings, label: 'Profile' },
-                          { to: '/orders', icon: Package, label: 'My Orders' },
+                          ...(user.role !== 'admin' ? [{ to: '/orders', icon: Package, label: 'My Orders' }] : []),
                         ].map(({ to, icon: Icon, label }) => (
                           <Link key={to} to={to} className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gold hover:bg-gold/5 transition-colors">
                             <Icon size={15} /> {label}
