@@ -72,7 +72,7 @@ export default function Navbar() {
   const navTextClass = scrolled || !isHome ? 'text-[#111111] dark:text-[#f0ece4]' : 'text-white';
   const navBg = scrolled || !isHome
     ? 'bg-white/95 dark:bg-[#111111]/95 backdrop-blur-xl shadow-sm border-b border-gray-100 dark:border-gray-800'
-    : 'bg-transparent';
+    : 'bg-gradient-to-b from-black/40 to-transparent';
 
   return (
     <>
