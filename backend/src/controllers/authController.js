@@ -18,16 +18,21 @@ const setCookies = (res, accessToken, refreshToken) => {
   res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
 };
 
+const sendTokens = (res, accessToken, refreshToken, data) => {
+  setCookies(res, accessToken, refreshToken);
+  // Also send tokens in response body for cross-domain production use
+  return { ...data, accessToken, refreshToken };
+};
+
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
     if (await User.findOne({ email })) return res.status(400).json({ message: 'Email already registered' });
     const user = await User.create({ name, email, password });
     const { accessToken, refreshToken } = generateTokens(user._id);
-    // Use findByIdAndUpdate to avoid triggering the password pre-save hook
     await User.findByIdAndUpdate(user._id, { refreshToken });
     setCookies(res, accessToken, refreshToken);
-    res.status(201).json({ user: { _id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.status(201).json({ user: { _id: user._id, name: user.name, email: user.email, role: user.role }, accessToken, refreshToken });
   } catch (err) { next(err); }
 };
 
@@ -37,10 +42,9 @@ exports.login = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (!user || !(await user.matchPassword(password))) return res.status(401).json({ message: 'Invalid credentials' });
     const { accessToken, refreshToken } = generateTokens(user._id);
-    // Use findByIdAndUpdate to avoid triggering the password pre-save hook
     await User.findByIdAndUpdate(user._id, { refreshToken });
     setCookies(res, accessToken, refreshToken);
-    res.json({ user: { _id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar } });
+    res.json({ user: { _id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar }, accessToken, refreshToken });
   } catch (err) { next(err); }
 };
 
@@ -57,7 +61,8 @@ exports.logout = async (req, res, next) => {
 
 exports.refreshToken = async (req, res, next) => {
   try {
-    const token = req.cookies.refreshToken;
+    // Accept token from cookie OR request body (for cross-domain production)
+    const token = req.cookies.refreshToken || req.body.refreshToken;
     if (!token) return res.status(401).json({ message: 'No refresh token' });
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
     const user = await User.findById(decoded.id);
@@ -65,7 +70,7 @@ exports.refreshToken = async (req, res, next) => {
     const { accessToken, refreshToken } = generateTokens(user._id);
     await User.findByIdAndUpdate(user._id, { refreshToken });
     setCookies(res, accessToken, refreshToken);
-    res.json({ message: 'Token refreshed' });
+    res.json({ message: 'Token refreshed', accessToken, refreshToken });
   } catch (err) { next(err); }
 };
 

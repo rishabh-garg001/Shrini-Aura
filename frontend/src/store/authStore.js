@@ -11,19 +11,24 @@ export const useAuthStore = create(
       login: async (credentials) => {
         const { data } = await api.post('/auth/login', credentials);
         set({ user: data.user });
+        if (data.accessToken) localStorage.setItem('accessToken', data.accessToken);
+        if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
         return data;
       },
       register: async (credentials) => {
         const { data } = await api.post('/auth/register', credentials);
         set({ user: data.user });
+        if (data.accessToken) localStorage.setItem('accessToken', data.accessToken);
+        if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
         return data;
       },
       logout: async () => {
         try { await api.post('/auth/logout'); } catch { /* ignore */ }
         set({ user: null });
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
       },
       fetchMe: async () => {
-        // Only fetch if we have a persisted user (cookies might still be valid)
         if (!get().user) return;
         try {
           const { data } = await api.get('/auth/me');
