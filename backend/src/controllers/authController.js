@@ -8,8 +8,14 @@ const generateTokens = (id) => {
 };
 
 const setCookies = (res, accessToken, refreshToken) => {
-  res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 15 * 60 * 1000 });
-  res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000 });
+  const isProd = process.env.NODE_ENV === 'production';
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'strict',
+  };
+  res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 });
+  res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 });
 };
 
 exports.register = async (req, res, next) => {
@@ -41,8 +47,10 @@ exports.login = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.user._id, { refreshToken: '' });
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    const isProd = process.env.NODE_ENV === 'production';
+    const cookieOptions = { httpOnly: true, secure: isProd, sameSite: isProd ? 'none' : 'strict' };
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
     res.json({ message: 'Logged out' });
   } catch (err) { next(err); }
 };
