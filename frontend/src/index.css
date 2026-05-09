@@ -33,6 +33,19 @@
     font-family: var(--font-serif);
   }
 
+  /* Pointer cursor on all interactive elements */
+  a, button, [role="button"], select, label[for],
+  input[type="checkbox"], input[type="radio"],
+  input[type="submit"], input[type="button"],
+  input[type="file"] {
+    cursor: pointer;
+  }
+
+  /* Disabled elements should show not-allowed */
+  button:disabled, input:disabled, select:disabled {
+    cursor: not-allowed;
+  }
+
   ::selection {
     background-color: #c9a96e33;
     color: #a07840;
@@ -81,6 +94,22 @@
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
   }
+
+  /* Page enter animation */
+  @keyframes pageEnter {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .page-enter {
+    animation: pageEnter 0.4s ease forwards;
+  }
+
+  /* Float animation for decorative elements */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+  .animate-float { animation: float 3s ease-in-out infinite; }
 
   /* Scrollbar */
   .scrollbar-hide::-webkit-scrollbar { display: none; }

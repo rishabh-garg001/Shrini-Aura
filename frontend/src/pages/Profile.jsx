@@ -208,7 +208,7 @@ export function Wishlist() {
               <div key={p._id} className="relative">
                 <ProductCard product={p} />
                 <button onClick={() => remove.mutate(p._id)}
-                  className="absolute top-3 left-3 z-20 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-colors">
+                  className="absolute bottom-[72px] right-3 z-20 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-colors">
                   <Trash2 size={13} />
                 </button>
               </div>

@@ -1,33 +1,117 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Package, MapPin, CreditCard, ArrowRight, CheckCircle, RotateCcw, XCircle, Download } from 'lucide-react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Package, MapPin, CreditCard, ArrowRight, CheckCircle, RotateCcw, XCircle, Download, AlertTriangle } from 'lucide-react';
 import api from '../lib/api';
 import { useCartStore } from '../store/cartStore';
 import { Spinner, Badge, Button } from '../components/ui';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 
 const STATUS_COLORS = { Pending: 'gold', Processing: 'gold', Shipped: 'blue', Delivered: 'green', Cancelled: 'red' };
 const STATUS_ICONS = { Pending: '🕐', Processing: '⚙️', Shipped: '🚚', Delivered: '✅', Cancelled: '❌' };
 
+// Cancel Modal with reason input
+function CancelModal({ onConfirm, onCancel, loading }) {
+  const [reason, setReason] = useState('');
+
+  const REASONS = [
+    'Changed my mind',
+    'Ordered by mistake',
+    'Found a better price elsewhere',
+    'Delivery time is too long',
+    'Other',
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        transition={{ duration: 0.15 }}
+        className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-100 dark:border-gray-800">
+
+        <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle size={22} className="text-red-500" />
+        </div>
+
+        <h2 className="font-serif text-xl font-bold text-[#111111] dark:text-[#f0ece4] text-center mb-1">
+          Cancel Order
+        </h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-5">
+          Please tell us why you want to cancel
+        </p>
+
+        {/* Quick reason buttons */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {REASONS.map(r => (
+            <button key={r} type="button"
+              onClick={() => setReason(r)}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-all ${reason === r ? 'bg-red-500 text-white border-red-500' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-red-300 hover:text-red-500'}`}>
+              {r}
+            </button>
+          ))}
+        </div>
+
+        {/* Custom reason textarea */}
+        <textarea
+          value={reason}
+          onChange={e => setReason(e.target.value)}
+          placeholder="Or type your reason here..."
+          rows={3}
+          className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm bg-white dark:bg-[#2c2c2e] text-[#111111] dark:text-[#f0ece4] placeholder-gray-400 outline-none focus:border-red-400 resize-none transition-colors mb-5"
+        />
+
+        <div className="flex gap-3">
+          <button onClick={onCancel}
+            className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:border-gray-300 transition-colors">
+            Keep Order
+          </button>
+          <button
+            onClick={() => onConfirm(reason)}
+            disabled={loading || !reason.trim()}
+            className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            {loading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <XCircle size={15} />}
+            Cancel Order
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export function Orders() {
   const queryClient = useQueryClient();
-  const { data: orders, isLoading } = useQuery({
+  const [cancelOrderId, setCancelOrderId] = useState(null);
+
+  const { data: orders, isLoading, isError } = useQuery({
     queryKey: ['my-orders'],
     queryFn: () => api.get('/orders/my').then(r => r.data),
   });
 
   const cancelMutation = useMutation({
-    mutationFn: (id) => api.put(`/orders/${id}/cancel`),
-    onSuccess: () => { queryClient.invalidateQueries(['my-orders']); toast.success('Order cancelled'); },
+    mutationFn: ({ id, reason }) => api.put(`/orders/${id}/cancel`, { reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['my-orders']);
+      toast.success('Order cancelled');
+      setCancelOrderId(null);
+    },
     onError: (err) => toast.error(err.response?.data?.message || 'Cannot cancel order'),
   });
 
   if (isLoading) return <div className=""><Spinner /></div>;
+  if (isError) return (
+    <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-gray-500 dark:text-gray-400 mb-4">Failed to load orders. Please try again.</p>
+        <button onClick={() => window.location.reload()} className="text-gold hover:underline text-sm font-semibold">Refresh</button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] ">
+    <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
           <p className="text-xs font-bold text-gold uppercase tracking-widest mb-1">Account</p>
@@ -86,11 +170,9 @@ export function Orders() {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {/* Reorder button */}
                     <ReorderButton order={order} />
-                    {/* Cancel button */}
                     {['Pending', 'Processing'].includes(order.orderStatus) && (
-                      <button onClick={() => { if (confirm('Cancel this order?')) cancelMutation.mutate(order._id); }}
+                      <button onClick={() => setCancelOrderId(order._id)}
                         className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-600 border border-red-200 dark:border-red-800 px-3 py-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                         <XCircle size={13} /> Cancel
                       </button>
@@ -105,6 +187,16 @@ export function Orders() {
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {cancelOrderId && (
+          <CancelModal
+            loading={cancelMutation.isPending}
+            onConfirm={(reason) => cancelMutation.mutate({ id: cancelOrderId, reason })}
+            onCancel={() => setCancelOrderId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -136,14 +228,20 @@ function ReorderButton({ order }) {
 export function OrderDetail() {
   const { id } = useParams();
   const queryClient = useQueryClient();
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', id],
     queryFn: () => api.get(`/orders/${id}`).then(r => r.data),
   });
 
   const cancelMutation = useMutation({
-    mutationFn: () => api.put(`/orders/${id}/cancel`),
-    onSuccess: () => { queryClient.invalidateQueries(['order', id]); toast.success('Order cancelled'); },
+    mutationFn: (reason) => api.put(`/orders/${id}/cancel`, { reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['order', id]);
+      toast.success('Order cancelled');
+      setShowCancelModal(false);
+    },
     onError: (err) => toast.error(err.response?.data?.message || 'Cannot cancel'),
   });
 
@@ -151,8 +249,6 @@ export function OrderDetail() {
     const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     const gold = [201, 169, 110];
-
-    // Header
     doc.setFillColor(...gold);
     doc.rect(0, 0, 210, 30, 'F');
     doc.setTextColor(255, 255, 255);
@@ -162,8 +258,6 @@ export function OrderDetail() {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.text('Premium Handmade Scented Candles', 14, 25);
-
-    // Invoice title
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
@@ -171,23 +265,17 @@ export function OrderDetail() {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.text(`#${order._id.slice(-8).toUpperCase()}`, 160, 25);
-
-    // Order info
     doc.setFontSize(10);
     doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString('en-IN')}`, 14, 45);
     doc.text(`Customer: ${order.user?.name || 'N/A'}`, 14, 52);
     doc.text(`Email: ${order.user?.email || 'N/A'}`, 14, 59);
     doc.text(`Address: ${order.shippingAddress.street}, ${order.shippingAddress.city}`, 14, 66);
     doc.text(`${order.shippingAddress.state} - ${order.shippingAddress.pincode}`, 14, 73);
-
-    // Status badge
     doc.setFillColor(...gold);
     doc.roundedRect(150, 42, 46, 10, 2, 2, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(9);
     doc.text(order.orderStatus, 173, 49, { align: 'center' });
-
-    // Table header
     doc.setTextColor(0, 0, 0);
     doc.setFillColor(245, 245, 245);
     doc.rect(14, 82, 182, 8, 'F');
@@ -197,8 +285,6 @@ export function OrderDetail() {
     doc.text('Qty', 130, 88);
     doc.text('Price', 150, 88);
     doc.text('Total', 175, 88);
-
-    // Table rows
     doc.setFont('helvetica', 'normal');
     let y = 98;
     order.orderItems.forEach((item, i) => {
@@ -209,13 +295,10 @@ export function OrderDetail() {
       doc.text(`Rs.${item.price * item.quantity}`, 175, y);
       y += 10;
     });
-
-    // Totals
     y += 5;
     doc.setDrawColor(...gold);
     doc.line(14, y, 196, y);
     y += 8;
-    doc.setFontSize(9);
     const totals = [
       ['Subtotal', `Rs.${order.itemsPrice}`],
       ...(order.discount > 0 ? [[`Coupon (${order.couponCode})`, `-Rs.${order.discount}`]] : []),
@@ -232,26 +315,22 @@ export function OrderDetail() {
     doc.text('TOTAL', 140, y + 2);
     doc.setTextColor(...gold);
     doc.text(`Rs.${order.totalPrice}`, 196, y + 2, { align: 'right' });
-
-    // Footer
     doc.setTextColor(150, 150, 150);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.text('Thank you for shopping with ShriniAura Candles!', 105, 280, { align: 'center' });
-    doc.text('hello@shriniaura.com | +91 98765 43210', 105, 285, { align: 'center' });
-
     doc.save(`ShriniAura-Invoice-${order._id.slice(-8).toUpperCase()}.pdf`);
     toast.success('Invoice downloaded!');
   };
 
   if (isLoading) return <div className=""><Spinner /></div>;
-  if (!order) return <div className=" text-center text-[#111111] dark:text-[#f0ece4]">Order not found</div>;
+  if (!order) return <div className="text-center text-[#111111] dark:text-[#f0ece4]">Order not found</div>;
 
   const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
   const currentStep = steps.indexOf(order.orderStatus);
 
   return (
-    <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] ">
+    <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -274,7 +353,7 @@ export function OrderDetail() {
               </button>
             )}
             {['Pending', 'Processing'].includes(order.orderStatus) && (
-              <button onClick={() => { if (confirm('Cancel this order?')) cancelMutation.mutate(); }}
+              <button onClick={() => setShowCancelModal(true)}
                 className="flex items-center gap-1.5 text-xs font-semibold text-red-500 border border-red-200 dark:border-red-800 px-3 py-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                 <XCircle size={13} /> Cancel Order
               </button>
@@ -303,6 +382,14 @@ export function OrderDetail() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Cancellation Reason */}
+        {order.orderStatus === 'Cancelled' && order.cancelReason && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 mb-6">
+            <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-1">Cancellation Reason</p>
+            <p className="text-sm text-red-600 dark:text-red-300">{order.cancelReason}</p>
           </div>
         )}
 
@@ -381,6 +468,16 @@ export function OrderDetail() {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showCancelModal && (
+          <CancelModal
+            loading={cancelMutation.isPending}
+            onConfirm={(reason) => cancelMutation.mutate(reason)}
+            onCancel={() => setShowCancelModal(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -16,6 +16,7 @@ export function Button({ children, variant = 'primary', size = 'md', className =
   };
   return (
     <motion.button
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.97 }}
       disabled={loading || props.disabled}
       className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
@@ -44,11 +45,17 @@ export function Badge({ children, color = 'gold' }) {
 export function Spinner({ fullPage = false }) {
   const inner = (
     <div className="flex flex-col items-center justify-center gap-3">
-      <div className="relative w-12 h-12">
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        className="relative w-12 h-12">
         <div className="absolute inset-0 rounded-full border-4 border-gold/10" />
-        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-gold animate-spin" />
-      </div>
-      <p className="text-sm text-gold/70 font-medium tracking-wide">Loading...</p>
+        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-gold" />
+      </motion.div>
+      <motion.p
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+        className="text-sm text-gold/70 font-medium tracking-wide">Loading...</motion.p>
     </div>
   );
   if (fullPage) return <div className="min-h-screen flex items-center justify-center">{inner}</div>;
@@ -78,7 +85,12 @@ export function StarRating({ rating, size = 14, interactive = false, onRate }) {
 
 export function SectionTitle({ label, title, subtitle, light = false }) {
   return (
-    <div className="text-center mb-14">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className="text-center mb-14">
       {label && (
         <div className="inline-flex items-center gap-2 mb-3">
           <div className="h-px w-8 bg-gold" />
@@ -94,7 +106,7 @@ export function SectionTitle({ label, title, subtitle, light = false }) {
           {subtitle}
         </p>
       )}
-    </div>
+    </motion.div>
   );
 }
 

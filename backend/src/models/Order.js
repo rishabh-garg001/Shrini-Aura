@@ -38,6 +38,7 @@ const orderSchema = new mongoose.Schema({
   },
   deliveredAt: Date,
   trackingNumber: String,
+  cancelReason: { type: String, default: '' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

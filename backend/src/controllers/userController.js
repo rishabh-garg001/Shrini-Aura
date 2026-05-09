@@ -41,10 +41,10 @@ exports.getWishlist = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// Admin
+// Admin - only show verified users
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password -refreshToken').sort('-createdAt');
+    const users = await User.find({ isVerified: true }).select('-password -refreshToken').sort('-createdAt');
     res.json(users);
   } catch (err) { next(err); }
 };

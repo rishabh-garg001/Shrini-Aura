@@ -15,6 +15,8 @@ const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Login = lazy(() => import('./pages/Auth').then(m => ({ default: m.Login })));
 const Register = lazy(() => import('./pages/Auth').then(m => ({ default: m.Register })));
+const VerifyEmail = lazy(() => import('./pages/Auth').then(m => ({ default: m.VerifyEmail })));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Orders = lazy(() => import('./pages/Orders').then(m => ({ default: m.Orders })));
 const OrderDetail = lazy(() => import('./pages/Orders').then(m => ({ default: m.OrderDetail })));
 const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })));
@@ -31,14 +33,20 @@ const queryClient = new QueryClient({
 
 function ProtectedRoute({ children }) {
   const { user } = useAuthStore();
-  return user ? children : <Navigate to="/login" />;
+  return user ? children : <Navigate to="/login" replace />;
+}
+
+// Redirect logged-in users away from auth pages
+function GuestRoute({ children }) {
+  const { user } = useAuthStore();
+  return user ? <Navigate to="/" replace /> : children;
 }
 
 function Layout({ children }) {
   return (
     <>
       <Navbar />
-      <main className="pt-28">{children}</main>
+      <main className="pt-28 page-enter">{children}</main>
       <Footer />
     </>
   );
@@ -66,8 +74,10 @@ export default function App() {
             <Route path="/products" element={<Layout><Products /></Layout>} />
             <Route path="/products/:id" element={<Layout><ProductDetail /></Layout>} />
             <Route path="/cart" element={<Layout><Cart /></Layout>} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+            <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<GuestRoute><ForgotPassword /></GuestRoute>} />
 
             <Route path="/checkout" element={<ProtectedRoute><Layout><Checkout /></Layout></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><Layout><Orders /></Layout></ProtectedRoute>} />

@@ -31,8 +31,8 @@ export default function ProductCard({ product }) {
     } catch { toast.error('Failed'); }
   };
 
-  const price = product.discountPrice || product.price;
-  const discount = product.discountPrice ? Math.round((1 - product.discountPrice / product.price) * 100) : 0;
+  const price = product.discountPrice > 0 ? product.discountPrice : product.price;
+  const discount = product.discountPrice > 0 ? Math.round((1 - product.discountPrice / product.price) * 100) : 0;
 
   return (
     <motion.div
@@ -105,7 +105,7 @@ export default function ProductCard({ product }) {
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
               <span className="text-lg font-bold text-[#111111] dark:text-[#f0ece4]">₹{price}</span>
-              {product.discountPrice && (
+              {product.discountPrice > 0 && (
                 <span className="text-xs text-gray-400 line-through">₹{product.price}</span>
               )}
             </div>

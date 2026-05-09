@@ -36,6 +36,7 @@ api.interceptors.response.use(
       } catch {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        return Promise.reject(err);
       }
     }
     return Promise.reject(err);

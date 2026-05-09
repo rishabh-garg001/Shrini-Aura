@@ -11,11 +11,11 @@ router.post('/validate-coupon', protect, (req, res) => {
   if (!rate) return res.status(400).json({ message: 'Invalid coupon code' });
   res.json({ code, discount: rate * 100, message: `${rate * 100}% discount applied!` });
 });
+router.get('/my', protect, getMyOrders);
+router.get('/', protect, adminOnly, getAllOrders);
 router.post('/:id/verify-payment', protect, verifyPayment);
 router.put('/:id/cancel', protect, cancelOrder);
-router.get('/my', protect, getMyOrders);
 router.get('/:id', protect, getOrder);
-router.get('/', protect, adminOnly, getAllOrders);
 router.put('/:id/status', protect, adminOnly, updateOrderStatus);
 
 module.exports = router;

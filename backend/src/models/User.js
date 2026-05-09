@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
   refreshToken: { type: String },
   googleId: { type: String },
   isVerified: { type: Boolean, default: false },
+  emailOtp: { type: String },
+  emailOtpExpiry: { type: Date },
+  resetOtp: { type: String },
+  resetOtpExpiry: { type: Date },
 }, { timestamps: true });
 
 userSchema.pre('save', async function () {

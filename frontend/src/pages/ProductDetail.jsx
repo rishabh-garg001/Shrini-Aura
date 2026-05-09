@@ -92,8 +92,8 @@ export default function ProductDetail() {
   if (isLoading) return <div className=""><Spinner /></div>;
   if (!product) return <div className=" text-center text-[#111111] dark:text-[#f0ece4]">Product not found</div>;
 
-  const price = product.discountPrice || product.price;
-  const discount = product.discountPrice ? Math.round((1 - product.discountPrice / product.price) * 100) : 0;
+  const price = product.discountPrice > 0 ? product.discountPrice : product.price;
+  const discount = product.discountPrice > 0 ? Math.round((1 - product.discountPrice / product.price) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] ">

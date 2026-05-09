@@ -6,6 +6,28 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
 });
 
+exports.sendOtp = async (email, otp, type = 'verify') => {
+  const subject = type === 'verify' ? 'Verify Your Email — ShriniAura' : 'Reset Your Password — ShriniAura';
+  const heading = type === 'verify' ? 'Verify Your Email 🕯️' : 'Reset Your Password 🔑';
+  const message = type === 'verify'
+    ? 'Use the OTP below to verify your email address. It expires in 10 minutes.'
+    : 'Use the OTP below to reset your password. It expires in 10 minutes.';
+  await transporter.sendMail({
+    from: `"ShriniAura Candles" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:auto;padding:32px;background:#faf7f2;border-radius:16px">
+        <h2 style="color:#c9a96e;font-family:Georgia,serif">${heading}</h2>
+        <p style="color:#444">${message}</p>
+        <div style="background:#111;color:#c9a96e;font-size:36px;font-weight:bold;letter-spacing:12px;text-align:center;padding:24px;border-radius:12px;margin:24px 0">${otp}</div>
+        <p style="color:#888;font-size:12px">If you didn't request this, please ignore this email.</p>
+        <p style="color:#c9a96e">— ShriniAura Candles Team</p>
+      </div>
+    `,
+  });
+};
+
 exports.sendOrderConfirmation = async (email, order) => {
   const itemsHtml = order.orderItems.map(i => `<tr><td>${i.name}</td><td>${i.quantity}</td><td>₹${i.price}</td></tr>`).join('');
   await transporter.sendMail({

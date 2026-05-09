@@ -8,7 +8,7 @@ export default function Cart() {
   const { items, removeItem, updateQuantity } = useCartStore();
   const navigate = useNavigate();
 
-  const subtotal = items.reduce((s, i) => s + (i.discountPrice || i.price) * i.quantity, 0);
+  const subtotal = items.reduce((s, i) => s + ((i.discountPrice > 0 ? i.discountPrice : i.price)) * i.quantity, 0);
   const shipping = subtotal > 999 ? 0 : 99;
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal + shipping + tax;
@@ -46,13 +46,14 @@ export default function Cart() {
           {/* Items */}
           <div className="lg:col-span-2 space-y-4">
             <AnimatePresence>
-              {items.map(item => (
+              {items.map((item, i) => (
                 <motion.div
                   key={item._id}
                   layout
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20, height: 0 }}
+                  transition={{ delay: i * 0.05 }}
                   className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 flex gap-5 border border-gray-100 dark:border-gray-800 hover:border-gold/20 transition-colors">
                   <Link to={`/products/${item._id}`} className="shrink-0">
                     <img

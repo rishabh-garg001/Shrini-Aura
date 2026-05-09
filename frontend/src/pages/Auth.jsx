@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { Button } from '../components/ui';
+import api from '../lib/api';
 import toast from 'react-hot-toast';
 
 function AuthForm({ mode }) {
@@ -17,23 +18,34 @@ function AuthForm({ mode }) {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      if (mode === 'login') await login(data);
-      else await signup(data);
-      toast.success(mode === 'login' ? 'Welcome back! 🕯️' : 'Account created! 🎉', {
-        style: { background: '#111', color: '#f0ece4', border: '1px solid #c9a96e33' },
-      });
-      navigate('/');
+      if (mode === 'login') {
+        await login(data);
+        toast.success('Welcome back! 🕯️', {
+          style: { background: '#111', color: '#f0ece4', border: '1px solid #c9a96e33' },
+        });
+        navigate('/');
+      } else {
+        const res = await signup(data);
+        toast.success('OTP sent to your email!');
+        navigate('/verify-email', { state: { email: data.email } });
+      }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Something went wrong');
+      const errData = err.response?.data;
+      if (errData?.needsVerification) {
+        toast.error('Please verify your email first');
+        navigate('/verify-email', { state: { email: errData.email } });
+        return;
+      }
+      toast.error(errData?.message || 'Something went wrong');
     } finally { setLoading(false); }
   };
 
   return (
     <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] flex">
-      {/* Left Panel - Image */}
+      {/* Left Panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?w=1200&auto=format&fit=crop"
+          src="https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?w=1200"
           alt="luxury candle"
           className="w-full h-full object-cover"
         />
@@ -49,7 +61,7 @@ function AuthForm({ mode }) {
             Premium Handcrafted<br />Scented Candles
           </h2>
           <p className="text-gray-300 text-sm leading-relaxed">
-            Transform your space into a sanctuary of calm and luxury with our artisanal candle collections.
+            Transform your space into a sanctuary of calm and luxury.
           </p>
           <div className="flex gap-6 mt-8">
             {[['2000+', 'Customers'], ['5★', 'Rating'], ['100%', 'Natural']].map(([n, l]) => (
@@ -62,7 +74,7 @@ function AuthForm({ mode }) {
         </div>
       </div>
 
-      {/* Right Panel - Form */}
+      {/* Right Panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -70,7 +82,6 @@ function AuthForm({ mode }) {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md">
 
-          {/* Logo (mobile) */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold">S</span>
@@ -112,7 +123,14 @@ function AuthForm({ mode }) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[#111111] dark:text-[#f0ece4] mb-1.5">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-sm font-semibold text-[#111111] dark:text-[#f0ece4]">Password</label>
+                {mode === 'login' && (
+                  <Link to="/forgot-password" className="text-xs text-gold hover:underline font-medium">
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <input
                   {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 characters' } })}
@@ -136,9 +154,7 @@ function AuthForm({ mode }) {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
-              <Link
-                to={mode === 'login' ? '/register' : '/login'}
-                className="text-gold font-semibold hover:underline">
+              <Link to={mode === 'login' ? '/register' : '/login'} className="text-gold font-semibold hover:underline">
                 {mode === 'login' ? 'Sign Up' : 'Sign In'}
               </Link>
             </p>
@@ -160,3 +176,108 @@ function AuthForm({ mode }) {
 
 export function Login() { return <AuthForm mode="login" />; }
 export function Register() { return <AuthForm mode="register" />; }
+
+export function VerifyEmail() {
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const { verifyEmail } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || '';
+
+  const handleChange = (val, idx) => {
+    if (!/^\d*$/.test(val)) return;
+    const next = [...otp];
+    next[idx] = val.slice(-1);
+    setOtp(next);
+    if (val && idx < 5) document.getElementById(`otp-${idx + 1}`)?.focus();
+  };
+
+  const handleKeyDown = (e, idx) => {
+    if (e.key === 'Backspace' && !otp[idx] && idx > 0) {
+      document.getElementById(`otp-${idx - 1}`)?.focus();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const code = otp.join('');
+    if (code.length !== 6) return toast.error('Enter all 6 digits');
+    setLoading(true);
+    try {
+      await verifyEmail({ email, otp: code });
+      toast.success('Email verified! Welcome to ShriniAura 🕯️');
+      navigate('/');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Invalid OTP');
+    } finally { setLoading(false); }
+  };
+
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await api.post('/auth/resend-otp', { email });
+      toast.success('OTP resent!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to resend');
+    } finally { setResending(false); }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] flex items-center justify-center px-4">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md bg-white dark:bg-[#1c1c1e] rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-800">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">📧</span>
+          </div>
+          <h1 className="font-serif text-2xl font-bold text-[#111111] dark:text-[#f0ece4] mb-2">Verify Your Email</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            We sent a 6-digit OTP to<br />
+            <span className="font-semibold text-gold">{email}</span>
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="flex gap-3 justify-center mb-6">
+            {otp.map((digit, idx) => (
+              <input
+                key={idx}
+                id={`otp-${idx}`}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={e => handleChange(e.target.value, idx)}
+                onKeyDown={e => handleKeyDown(e, idx)}
+                className="w-12 h-12 text-center text-xl font-bold border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#2c2c2e] text-[#111111] dark:text-[#f0ece4] outline-none focus:border-gold transition-colors"
+              />
+            ))}
+          </div>
+
+          <Button type="submit" loading={loading} className="w-full" size="lg">
+            Verify Email <ArrowRight size={16} />
+          </Button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Didn't receive the OTP?{' '}
+            <button onClick={handleResend} disabled={resending}
+              className="text-gold font-semibold hover:underline disabled:opacity-50">
+              {resending ? 'Sending...' : 'Resend OTP'}
+            </button>
+          </p>
+        </div>
+
+        <div className="mt-4 text-center">
+          <Link to="/register" className="text-xs text-gray-400 hover:text-gold transition-colors">
+            ← Back to Register
+          </Link>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+

@@ -207,7 +207,7 @@ export default function AdminProducts() {
                 </td>
                 <td className="px-4 py-3 text-gray-500">{p.category}</td>
                 <td className="px-4 py-3">
-                  <span className="font-medium">₹{p.discountPrice || p.price}</span>
+                  <span className="font-medium">₹{p.discountPrice > 0 ? p.discountPrice : p.price}</span>
                   {p.discountPrice && <span className="text-xs text-gray-400 line-through ml-1">₹{p.price}</span>}
                 </td>
                 <td className="px-4 py-3">

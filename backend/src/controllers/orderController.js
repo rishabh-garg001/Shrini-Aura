@@ -135,9 +135,11 @@ exports.cancelOrder = async (req, res, next) => {
     if (!order) return res.status(404).json({ message: 'Order not found' });
     if (order.user.toString() !== req.user._id.toString()) return res.status(403).json({ message: 'Not authorized' });
     if (!['Pending', 'Processing'].includes(order.orderStatus)) return res.status(400).json({ message: 'Order cannot be cancelled at this stage' });
+    const { reason } = req.body;
+    if (!reason || !reason.trim()) return res.status(400).json({ message: 'Please provide a cancellation reason' });
     order.orderStatus = 'Cancelled';
+    order.cancelReason = reason.trim();
     await order.save();
-    // Restore stock
     for (const item of order.orderItems) {
       await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity, soldCount: -item.quantity } });
     }

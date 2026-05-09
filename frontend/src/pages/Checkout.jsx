@@ -21,7 +21,7 @@ export default function Checkout() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
-  const subtotal = items.reduce((s, i) => s + (i.discountPrice || i.price) * i.quantity, 0);
+  const subtotal = items.reduce((s, i) => s + ((i.discountPrice > 0 ? i.discountPrice : i.price)) * i.quantity, 0);
   const shipping = subtotal > 999 ? 0 : 99;
   const couponDiscount = coupon ? Math.round(subtotal * coupon.discount / 100) : 0;
   const tax = Math.round((subtotal - couponDiscount) * 0.18);
@@ -48,7 +48,7 @@ export default function Checkout() {
       const orderItems = items.map(i => ({
         product: i._id, name: i.name,
         image: i.images?.[0]?.url,
-        price: i.discountPrice || i.price,
+        price: (i.discountPrice > 0 ? i.discountPrice : i.price),
         quantity: i.quantity,
       }));
       const { data } = await api.post('/orders', {

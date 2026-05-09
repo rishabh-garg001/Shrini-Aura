@@ -70,7 +70,8 @@ export default function Products() {
       {/* Page Header */}
       <div className="bg-white dark:bg-[#111111] border-b border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
+            className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <p className="text-xs font-bold text-gold uppercase tracking-widest mb-1">
                 {categoryParam ? 'Collection' : search ? 'Search Results' : 'All Products'}
@@ -110,7 +111,7 @@ export default function Products() {
                 )}
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Active Filter Chips */}
           <AnimatePresence>
@@ -266,3 +267,4 @@ export default function Products() {
     </div>
   );
 }
+

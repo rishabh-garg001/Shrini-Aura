@@ -105,7 +105,11 @@ export default function AdminOrders() {
                 </td>
                 <td className="px-4 py-3 font-bold text-[#111111] dark:text-[#f0ece4]">₹{o.totalPrice}</td>
                 <td className="px-4 py-3"><Badge color={o.isPaid ? 'green' : 'red'}>{o.isPaid ? 'Paid' : 'Pending'}</Badge></td>
-                <td className="px-4 py-3"><Badge color={STATUS_COLORS[o.orderStatus]}>{o.orderStatus}</Badge></td>
+                <td className="px-4 py-3"><Badge color={STATUS_COLORS[o.orderStatus]}>{o.orderStatus}</Badge>
+                  {o.orderStatus === 'Cancelled' && o.cancelReason && (
+                    <p className="text-xs text-red-400 mt-1 max-w-[140px] truncate" title={o.cancelReason}>↳ {o.cancelReason}</p>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <select value={o.orderStatus}
                     onChange={e => updateStatus.mutate({ id: o._id, orderStatus: e.target.value })}

@@ -46,11 +46,6 @@ export default function Home() {
   return (
     <div className="min-h-screen">
 
-      {/* ── ANNOUNCEMENT BANNER ── */}
-      <div className="bg-gold text-white text-center py-2.5 px-4 text-xs font-semibold tracking-wide">
-        🕯️ Free shipping on orders above ₹999 &nbsp;·&nbsp; Use code <span className="bg-white/20 px-1.5 py-0.5 rounded font-bold">AURA10</span> for 10% off &nbsp;·&nbsp; New collections available!
-      </div>
-
       {/* ── HERO ── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
@@ -127,8 +122,10 @@ export default function Home() {
       <section className="bg-[#111111] border-y border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {TRUST.map(({ icon: Icon, label, sub }) => (
-              <div key={label} className="flex items-center gap-3">
+            {TRUST.map(({ icon: Icon, label, sub }, i) => (
+              <motion.div key={label} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center shrink-0">
                   <Icon size={18} className="text-gold" />
                 </div>
@@ -136,7 +133,7 @@ export default function Home() {
                   <p className="text-white text-sm font-semibold">{label}</p>
                   <p className="text-gray-500 text-xs">{sub}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
