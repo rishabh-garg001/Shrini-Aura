@@ -7,11 +7,11 @@ import ProductCard from '../components/product/ProductCard';
 import { Button, SectionTitle, Spinner } from '../components/ui';
 
 const CATEGORIES = [
-  { name: 'Floral Bliss', img: 'https://images.unsplash.com/photo-1608181831718-c9fca6b0f0e5?w=600&auto=format&fit=crop', desc: 'Romantic floral scents', emoji: '🌸' },
-  { name: 'Vanilla Dreams', img: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=600&auto=format&fit=crop', desc: 'Warm & indulgent', emoji: '🍦' },
-  { name: 'Festive Lights', img: 'https://images.unsplash.com/photo-1574169208507-84376144848b?w=600&auto=format&fit=crop', desc: 'Celebrate every moment', emoji: '✨' },
-  { name: 'Ocean Breeze', img: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=600&auto=format&fit=crop', desc: 'Fresh coastal escape', emoji: '🌊' },
-  { name: 'Luxury Gold', img: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&auto=format&fit=crop', desc: 'Premium & exclusive', emoji: '👑', category: 'Luxury Gold Collection' },
+  { name: 'Floral Bliss', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233707.png', desc: 'Romantic floral scents', emoji: '🌸' },
+  { name: 'Vanilla Dreams', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233826.png', desc: 'Warm & indulgent', emoji: '🍦' },
+  { name: 'Festive Lights', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png?updatedAt=1778350220560', desc: 'Celebrate every moment', emoji: '✨' },
+  { name: 'Ocean Breeze', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20223115.png?updatedAt=1778349753063', desc: 'Fresh coastal escape', emoji: '🌊' },
+  { name: 'Luxury Gold', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233907.png', desc: 'Premium & exclusive', emoji: '👑', category: 'Luxury Gold Collection' },
 ];
 
 const TESTIMONIALS = [
@@ -50,7 +50,7 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1602523961358-f9f03dd557db?w=1920&auto=format&fit=crop"
+            src="https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233826.png"
             alt="hero candle"
             className="w-full h-full object-cover scale-105"
           />
@@ -68,7 +68,7 @@ export default function Home() {
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}
-              className="font-serif text-5xl sm:text-6xl md:text-7xl font-bold text-white leading-[1.05] mb-6">
+              className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05] mb-6">
               Light Up Your<br />
               <span className="text-gradient">World</span>
             </motion.h1>
@@ -247,7 +247,7 @@ export default function Home() {
       {/* ── CTA ── */}
       <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1574169208507-84376144848b?w=1600&auto=format&fit=crop" alt="cta" className="w-full h-full object-cover" />
+          <img src="https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png?updatedAt=1778350220560" alt="cta" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/95 via-[#111111]/80 to-[#111111]/60" />
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">

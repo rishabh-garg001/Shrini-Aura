@@ -185,7 +185,8 @@ export default function AdminProducts() {
       )}
 
       <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[600px]">
           <thead>
             <tr className="text-left text-gray-500 border-b dark:border-gray-800 bg-gray-50 dark:bg-gray-800">
               <th className="px-4 py-3">Product</th>
@@ -227,6 +228,7 @@ export default function AdminProducts() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <AnimatePresence>

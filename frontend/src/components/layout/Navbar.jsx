@@ -79,7 +79,8 @@ export default function Navbar() {
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500`}>
         {/* Announcement Banner */}
         <div className="bg-gold text-white text-center py-2.5 px-4 text-xs font-semibold tracking-wide">
-          🕯️ Free shipping on orders above ₹999 &nbsp;·&nbsp; Use code <span className="bg-white/20 px-1.5 py-0.5 rounded font-bold">AURA10</span> for 10% off &nbsp;·&nbsp; New collections available!
+          <span className="hidden sm:inline">🕯️ Free shipping on orders above ₹999 &nbsp;·&nbsp; Use code <span className="bg-white/20 px-1.5 py-0.5 rounded font-bold">AURA10</span> for 10% off &nbsp;·&nbsp; New collections available!</span>
+          <span className="sm:hidden">🕯️ Use code <span className="bg-white/20 px-1.5 py-0.5 rounded font-bold">AURA10</span> for 10% off · Free shipping ₹999+</span>
         </div>
         {/* Main Navbar */}
         <div className={`transition-all duration-500 ${navBg}`}>

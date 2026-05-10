@@ -111,7 +111,7 @@ export default function ProductDetail() {
           <span className="text-[#111111] dark:text-[#f0ece4] font-medium line-clamp-1">{product.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
           {/* Images */}
           <div className="space-y-4">
             <motion.div key={activeImg} initial={{ opacity: 0.7 }} animate={{ opacity: 1 }}

@@ -43,13 +43,13 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-[#111111] dark:text-[#f0ece4]">Dashboard</h1>
+          <h1 className="font-serif text-xl sm:text-2xl font-bold text-[#111111] dark:text-[#f0ece4]">Dashboard</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Welcome back! Here's what's happening.</p>
         </div>
-        <div className="text-xs text-gray-400 bg-white dark:bg-[#1c1c1e] border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-full">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+        <div className="text-xs text-gray-400 bg-white dark:bg-[#1c1c1e] border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-full whitespace-nowrap">
+          {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
         </div>
       </div>
 

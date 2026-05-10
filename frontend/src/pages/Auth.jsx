@@ -45,7 +45,7 @@ function AuthForm({ mode }) {
       {/* Left Panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?w=1200"
+          src="https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233907.png"
           alt="luxury candle"
           className="w-full h-full object-cover"
         />

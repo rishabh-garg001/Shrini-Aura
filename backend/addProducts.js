@@ -12,7 +12,7 @@ const products = [
     weight: '200g', burnTime: '40-45 hours', scent: 'Rose, Jasmine, Peony',
     ingredients: ['Soy Wax', 'Rose Essential Oil', 'Jasmine Absolute', 'Cotton Wick'],
     isFeatured: true, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1608181831718-c9fca6b0f0e5?w=800&auto=format&fit=crop', public_id: 'rose_garden' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233707.png', public_id: 'rose_garden' }],
     rating: 4.8, numReviews: 24,
   },
   {
@@ -24,7 +24,7 @@ const products = [
     weight: '180g', burnTime: '35-40 hours', scent: 'Lavender, Chamomile, Eucalyptus',
     ingredients: ['Soy Wax', 'Lavender Essential Oil', 'Chamomile Extract', 'Cotton Wick'],
     isFeatured: true, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1543512214-318c7553f230?w=800&auto=format&fit=crop', public_id: 'lavender' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233759.png', public_id: 'lavender' }],
     rating: 4.9, numReviews: 31,
   },
   {
@@ -36,7 +36,7 @@ const products = [
     weight: '220g', burnTime: '45-50 hours', scent: 'Vanilla Bean, Sandalwood, Caramel',
     ingredients: ['Coconut Wax', 'Vanilla Absolute', 'Sandalwood Oil', 'Cotton Wick'],
     isFeatured: true, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&auto=format&fit=crop', public_id: 'vanilla' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233826.png', public_id: 'vanilla' }],
     rating: 4.7, numReviews: 18,
   },
   {
@@ -48,7 +48,7 @@ const products = [
     weight: '200g', burnTime: '40-45 hours', scent: 'Dark Vanilla, Black Pepper, Amber',
     ingredients: ['Soy Wax', 'Vanilla Absolute', 'Black Pepper EO', 'Amber Resin'],
     isFeatured: false, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1602523961358-f9f03dd557db?w=800&auto=format&fit=crop', public_id: 'vanilla_noir' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233729.png', public_id: 'vanilla_noir' }],
     rating: 4.6, numReviews: 12,
   },
   {
@@ -60,7 +60,7 @@ const products = [
     weight: '250g', burnTime: '50-55 hours', scent: 'Marigold, Saffron, Cinnamon, Clove',
     ingredients: ['Soy Wax', 'Marigold Extract', 'Saffron Oil', 'Cinnamon EO', 'Cotton Wick'],
     isFeatured: true, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1574169208507-84376144848b?w=800&auto=format&fit=crop', public_id: 'diwali' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png?updatedAt=1778350220560', public_id: 'diwali' }],
     rating: 4.9, numReviews: 45,
   },
   {
@@ -72,7 +72,7 @@ const products = [
     weight: '230g', burnTime: '45-50 hours', scent: 'Pine, Cinnamon, Orange Peel, Clove',
     ingredients: ['Beeswax Blend', 'Pine EO', 'Cinnamon EO', 'Orange EO'],
     isFeatured: false, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&auto=format&fit=crop', public_id: 'winter' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20223157.png?updatedAt=1778349753499', public_id: 'winter' }],
     rating: 4.7, numReviews: 22,
   },
   {
@@ -84,7 +84,7 @@ const products = [
     weight: '200g', burnTime: '40-45 hours', scent: 'Sea Salt, Driftwood, Aquatic, Coconut',
     ingredients: ['Soy Wax', 'Sea Salt Fragrance', 'Driftwood EO', 'Cotton Wick'],
     isFeatured: true, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800&auto=format&fit=crop', public_id: 'ocean' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20223115.png?updatedAt=1778349753063', public_id: 'ocean' }],
     rating: 4.8, numReviews: 29,
   },
   {
@@ -96,7 +96,7 @@ const products = [
     weight: '190g', burnTime: '38-42 hours', scent: 'Bergamot, White Tea, Ocean Breeze',
     ingredients: ['Soy Wax', 'Bergamot EO', 'White Tea Extract', 'Cotton Wick'],
     isFeatured: false, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?w=800&auto=format&fit=crop', public_id: 'coastal' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20223048.png?updatedAt=1778349751774', public_id: 'coastal' }],
     rating: 4.5, numReviews: 16,
   },
   {
@@ -108,7 +108,7 @@ const products = [
     weight: '300g', burnTime: '60-70 hours', scent: 'Oud Wood, Bulgarian Rose, Amber, Musk',
     ingredients: ['Premium Coconut Wax', 'Oud EO', 'Bulgarian Rose Absolute', '24k Gold Flakes', 'Wooden Wick'],
     isFeatured: true, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&auto=format&fit=crop', public_id: 'gold_oud' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233907.png', public_id: 'gold_oud' }],
     rating: 5.0, numReviews: 8,
   },
   {
@@ -120,7 +120,7 @@ const products = [
     weight: '350g', burnTime: '70-80 hours', scent: 'Black Orchid, Dark Musk, Cedarwood, Vetiver',
     ingredients: ['Premium Soy Blend', 'Black Orchid Absolute', 'Cedarwood EO', 'Wooden Wick'],
     isFeatured: true, isActive: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=800&auto=format&fit=crop', public_id: 'velvet_noir' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233707.png', public_id: 'velvet_noir' }],
     rating: 4.9, numReviews: 6,
   },
 ];

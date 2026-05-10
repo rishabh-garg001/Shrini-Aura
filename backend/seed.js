@@ -18,7 +18,7 @@ const products = [
     scent: 'Rose, Jasmine, Peony',
     ingredients: ['Soy Wax', 'Rose Essential Oil', 'Jasmine Absolute', 'Cotton Wick'],
     isFeatured: true,
-    images: [{ url: 'https://images.unsplash.com/photo-1602523961358-f9f03dd557db?w=800', public_id: 'rose_garden' }],
+    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png', public_id: 'rose_garden' }],
     rating: 4.8, numReviews: 24,
   },
   {

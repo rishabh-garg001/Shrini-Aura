@@ -59,18 +59,18 @@ export default function AdminOrders() {
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <h1 className="font-serif text-2xl font-bold text-[#111111] dark:text-[#f0ece4]">Orders ({data?.total})</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Export CSV */}
           <button onClick={() => exportCSV(data?.orders || [])}
             className="flex items-center gap-2 px-3 py-2 text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#1c1c1e] text-[#111111] dark:text-[#f0ece4] hover:border-gold hover:text-gold transition-all">
             <Download size={14} /> Export CSV
           </button>
           {/* Search */}
-          <div className="relative">
+          <div className="relative flex-1 min-w-[160px]">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search by name, email, ID..."
-              className="pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#1c1c1e] text-[#111111] dark:text-[#f0ece4] outline-none focus:border-gold w-56 transition-colors" />
+              placeholder="Search..."
+              className="pl-9 pr-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-[#1c1c1e] text-[#111111] dark:text-[#f0ece4] outline-none focus:border-gold w-full transition-colors" />
           </div>
           {/* Status Filter */}
           <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
@@ -82,7 +82,8 @@ export default function AdminOrders() {
       </div>
 
       <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[600px]">
           <thead>
             <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#2c2c2e]">
               <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider">Order ID</th>
@@ -124,6 +125,7 @@ export default function AdminOrders() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Pagination */}

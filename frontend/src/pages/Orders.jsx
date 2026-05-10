@@ -365,7 +365,7 @@ export function OrderDetail() {
         {order.orderStatus !== 'Cancelled' && (
           <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-6 mb-6 border border-gray-100 dark:border-gray-800">
             <h2 className="font-semibold text-sm text-[#111111] dark:text-[#f0ece4] mb-6 uppercase tracking-wider">Order Progress</h2>
-            <div className="relative flex items-center justify-between">
+            <div className="relative flex items-center justify-between overflow-x-auto pb-2">
               <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700" />
               <div className="absolute top-5 left-0 h-0.5 bg-gold transition-all duration-700"
                 style={{ width: currentStep >= 0 ? `${(currentStep / (steps.length - 1)) * 100}%` : '0%' }} />

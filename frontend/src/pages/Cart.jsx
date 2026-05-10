@@ -54,7 +54,7 @@ export default function Cart() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20, height: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 flex gap-5 border border-gray-100 dark:border-gray-800 hover:border-gold/20 transition-colors">
+                  className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-4 sm:p-5 flex gap-3 sm:gap-5 border border-gray-100 dark:border-gray-800 hover:border-gold/20 transition-colors">
                   <Link to={`/products/${item._id}`} className="shrink-0">
                     <img
                       src={item.images?.[0]?.url || 'https://images.unsplash.com/photo-1602523961358-f9f03dd557db?w=200'}

@@ -172,7 +172,8 @@ export default function AdminUsers() {
       </div>
 
       <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[500px]">
           <thead>
             <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#2c2c2e]">
               <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Name</th>
@@ -219,6 +220,7 @@ export default function AdminUsers() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* User Detail Side Panel */}

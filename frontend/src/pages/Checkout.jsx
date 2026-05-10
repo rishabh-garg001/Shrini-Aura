@@ -96,16 +96,16 @@ export default function Checkout() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Progress Steps */}
-        <div className="flex items-center justify-center gap-2 mb-10">
+        <div className="flex items-center justify-center gap-1 sm:gap-2 mb-10 overflow-x-auto pb-2">
           {STEPS.map((step, i) => (
-            <div key={step} className="flex items-center gap-2">
-              <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${i === 1 ? 'bg-gold text-white shadow-lg shadow-gold/25' : i < 1 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
+            <div key={step} className="flex items-center gap-1 sm:gap-2 shrink-0">
+              <div className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${i === 1 ? 'bg-gold text-white shadow-lg shadow-gold/25' : i < 1 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
                 <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold">
                   {i < 1 ? '✓' : i + 1}
                 </span>
-                {step}
+                <span className="hidden sm:inline">{step}</span>
               </div>
-              {i < STEPS.length - 1 && <div className="w-8 h-px bg-gray-200 dark:bg-gray-700" />}
+              {i < STEPS.length - 1 && <div className="w-4 sm:w-8 h-px bg-gray-200 dark:bg-gray-700" />}
             </div>
           ))}
         </div>
