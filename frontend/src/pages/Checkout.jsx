@@ -71,6 +71,8 @@ export default function Checkout() {
             try {
               await api.post(`/orders/${data.order._id}/verify-payment`, response);
               clearCart();
+              // Also clear cart in DB
+              await api.put('/users/cart', { items: [] }).catch(() => {});
               toast.success('Order placed successfully! 🎉');
               navigate(`/orders/${data.order._id}`);
             } catch { toast.error('Payment verification failed'); }

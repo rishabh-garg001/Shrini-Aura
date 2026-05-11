@@ -13,11 +13,13 @@ export const useAuthStore = create(
         set({ user: data.user });
         if (data.accessToken) localStorage.setItem('accessToken', data.accessToken);
         if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+        // Restore cart from DB after login
+        const { useCartStore } = await import('./cartStore');
+        await useCartStore.getState().restoreCart();
         return data;
       },
       register: async (credentials) => {
         const { data } = await api.post('/auth/register', credentials);
-        // Register now returns email for OTP verification, not tokens
         return data;
       },
       verifyEmail: async ({ email, otp }) => {
@@ -25,10 +27,16 @@ export const useAuthStore = create(
         set({ user: data.user });
         if (data.accessToken) localStorage.setItem('accessToken', data.accessToken);
         if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+        // Restore cart from DB after email verification
+        const { useCartStore } = await import('./cartStore');
+        await useCartStore.getState().restoreCart();
         return data;
       },
       logout: async () => {
         try { await api.post('/auth/logout'); } catch { /* ignore */ }
+        // Clear local cart on logout
+        const { useCartStore } = await import('./cartStore');
+        useCartStore.getState().clearCart();
         set({ user: null });
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');

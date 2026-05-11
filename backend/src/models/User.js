@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     isDefault: { type: Boolean, default: false },
   }],
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+  cart: [{
+    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
+    quantity: { type: Number, default: 1 },
+  }],
   refreshToken: { type: String },
   googleId: { type: String },
   isVerified: { type: Boolean, default: false },

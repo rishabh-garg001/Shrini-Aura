@@ -3,6 +3,25 @@ const Product = require('../models/Product');
 
 exports.getProfile = async (req, res) => res.json(req.user);
 
+exports.saveCart = async (req, res, next) => {
+  try {
+    const { items } = req.body;
+    const cartItems = items.map(i => ({ product: i._id, quantity: i.quantity }));
+    await User.findByIdAndUpdate(req.user._id, { cart: cartItems });
+    res.json({ message: 'Cart saved' });
+  } catch (err) { next(err); }
+};
+
+exports.getCart = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).populate('cart.product');
+    const items = user.cart
+      .filter(c => c.product)
+      .map(c => ({ ...c.product.toObject(), quantity: c.quantity }));
+    res.json(items);
+  } catch (err) { next(err); }
+};
+
 exports.updateProfile = async (req, res, next) => {
   try {
     const { name, phone, addresses } = req.body;

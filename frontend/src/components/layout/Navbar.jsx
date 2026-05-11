@@ -18,6 +18,7 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { user, logout } = useAuthStore();
   const items = useCartStore(s => s.items);
+  const clearCart = useCartStore(s => s.clearCart);
   const { dark, toggle } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
