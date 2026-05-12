@@ -19,7 +19,6 @@ const debouncedSync = (items) => {
 };
 
 export const useCartStore = create(
-  persist(
     (set, get) => ({
       items: [],
 
@@ -134,5 +133,5 @@ export const useCartStore = create(
     {
       name: 'cart',
     }
-  )
+  
 );
