@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import api from '../lib/api';
 
 // Debounce helper to avoid too many API calls
@@ -19,6 +19,7 @@ const debouncedSync = (items) => {
 };
 
 export const useCartStore = create(
+  persist(
     (set, get) => ({
       items: [],
 
@@ -132,6 +133,7 @@ export const useCartStore = create(
     }),
     {
       name: 'cart',
+      storage: createJSONStorage(() => localStorage),
     }
-  
+  )
 );
