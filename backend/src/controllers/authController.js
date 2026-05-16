@@ -113,8 +113,10 @@ exports.resetPassword = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
+     console.log(req.body)
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+    console.log(user)
     if (!user || !(await user.matchPassword(password))) return res.status(401).json({ message: 'Invalid credentials' });
     if (!user.isVerified) return res.status(403).json({ message: 'Please verify your email first', email, needsVerification: true });
     const { accessToken, refreshToken } = generateTokens(user._id);

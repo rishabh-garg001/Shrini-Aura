@@ -6,21 +6,49 @@ const Product = require('./src/models/Product');
 
 const products = [
   {
-    name: 'Rose Garden Bliss',
-    description: 'Immerse yourself in the delicate fragrance of fresh roses and jasmine. Hand-poured with 100% soy wax, this candle creates a romantic, floral ambiance perfect for evenings.',
-    shortDescription: 'Fresh roses & jasmine — pure romance in a jar.',
-    price: 799,
-    discountPrice: 649,
-    category: 'Floral Bliss',
-    stock: 50,
-    weight: '200g',
-    burnTime: '40-45 hours',
-    scent: 'Rose, Jasmine, Peony',
-    ingredients: ['Soy Wax', 'Rose Essential Oil', 'Jasmine Absolute', 'Cotton Wick'],
-    isFeatured: true,
-    images: [{ url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png', public_id: 'rose_garden' }],
-    rating: 4.8, numReviews: 24,
-  },
+  name: 'Teddy Cupcake Delight',
+
+  description:
+    'A playful and heartwarming candle crafted to look like a dreamy cupcake topped with an adorable teddy bear, chocolate bars, and sweet candy accents. Infused with cozy vanilla caramel notes, this handcrafted piece adds charm, warmth, and sweetness to any space — perfect for gifting or aesthetic decor lovers.',
+
+  shortDescription:
+    'Cute teddy cupcake candle — sweet, cozy & aesthetic.',
+
+  price: 999,
+
+  discountPrice: 849,
+
+  category: 'Vanilla Dreams',
+
+  stock: 35,
+
+  weight: '250g',
+
+  burnTime: '45-50 hours',
+
+  scent:
+    'Vanilla Cream, Caramel, Chocolate, Marshmallow',
+
+  ingredients: [
+    "Natural Soy Wax",
+    "Vanilla Fragrance Oil",
+    "Cotton Wick",
+    "Eco-safe Candle Pigments",
+  ],
+
+  isFeatured: true,
+
+  images: [
+    {
+      url: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png',
+      public_id: 'teddy_cupcake_1',
+    },
+  ],
+
+  rating: 4.9,
+
+  numReviews: 31,
+},
   {
     name: 'Lavender Serenity',
     description: 'A calming blend of French lavender and chamomile that soothes the mind and body. Perfect for meditation, yoga, or winding down after a long day.',

@@ -65,6 +65,7 @@ exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({ isVerified: true }).select('-password -refreshToken').sort('-createdAt');
     res.json(users);
+    console.log(req.body)
   } catch (err) { next(err); }
 };
 

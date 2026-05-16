@@ -32,15 +32,29 @@ export const useAuthStore = create(
         await useCartStore.getState().restoreCart();
         return data;
       },
-      logout: async () => {
-        try { await api.post('/auth/logout'); } catch { /* ignore */ }
-        // Clear local cart on logout
-        const { useCartStore } = await import('./cartStore');
-        useCartStore.getState().clearCart();
-        set({ user: null });
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      },
+     logout: async () => {
+  try {
+    await api.post('/auth/logout');
+  } catch {
+    /* ignore */
+  }
+
+  // Clear only local cart (not DB cart)
+  const { useCartStore } = await import('./cartStore');
+
+  // Remove persisted cart from localStorage
+  useCartStore.persist.clearStorage();
+
+  // Clear current cart state instantly
+  useCartStore.setState({
+    items: [],
+  });
+
+  set({ user: null });
+
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+},
       fetchMe: async () => {
         if (!get().user) return;
         try {
