@@ -85,116 +85,126 @@ export default function Navbar() {
         </div>
         {/* Main Navbar */}
         <div className={`transition-all duration-500 ${navBg}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-18 py-3">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center shadow-lg shadow-gold/30">
-                <span className="text-white text-xs font-bold">S</span>
-              </div>
-              <span className={`font-serif text-xl font-bold tracking-wide transition-colors ${navTextClass}`}>ShriniAura</span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center gap-1">
-              <Link to="/products" className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
-                All Candles
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-18 py-3">
+              {/* Logo */}
+              <Link to="/" className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center shadow-lg shadow-gold/30">
+                  <span className="text-white text-xs font-bold">S</span>
+                </div>
+                <span className={`font-serif text-xl font-bold tracking-wide transition-colors ${navTextClass}`}>ShriniAura</span>
               </Link>
-              <div className="relative group">
-                <button className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
-                  Collections <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
-                </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white dark:bg-[#1c1c1e] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  {CATEGORIES.map(c => (
-                    <Link key={c} to={`/products?category=${encodeURIComponent(c)}`}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gold hover:bg-gold/5 transition-colors">
-                      <div className="w-1.5 h-1.5 rounded-full bg-gold/50" />{c}
-                    </Link>
-                  ))}
+
+              {/* Desktop Nav */}
+              <div className="hidden lg:flex items-center gap-1">
+                <Link to="/products" className={`px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
+                  All Candles
+                </Link>
+                <div className="relative group">
+                  <button className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
+                    Collections <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
+                  </button>
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white dark:bg-[#1c1c1e] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    {CATEGORIES.map(c => (
+                      <Link key={c} to={`/products?category=${encodeURIComponent(c)}`}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gold hover:bg-gold/5 transition-colors">
+                        <div className="w-1.5 h-1.5 rounded-full bg-gold/50" />{c}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-1">
-              <button onClick={() => setSearchOpen(true)} className={`p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
-                <Search size={18} />
-              </button>
-              <button onClick={toggle} className={`p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
-                {dark ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
-              {user && (
-                <Link to="/wishlist" className={`p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
-                  <Heart size={18} />
-                </Link>
-              )}
-              <Link to="/cart" className={`relative p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
-                <ShoppingCart size={18} />
-                <AnimatePresence>
-                  {cartCount > 0 && (
-                    <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                      className="absolute -top-0.5 -right-0.5 bg-gold text-white text-[10px] font-bold min-w-[18px] min-h-[18px] rounded-full flex items-center justify-center px-1">
-                      {cartCount}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </Link>
-
-              {user ? (
-                <div className="relative" ref={userMenuRef}>
-                  <button onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full bg-gold/10 hover:bg-gold/20 transition-all">
-                    <div className="w-7 h-7 bg-gold rounded-full flex items-center justify-center text-white text-xs font-bold">
-                      {user.name?.[0]?.toUpperCase()}
-                    </div>
-                    <span className={`text-sm font-medium hidden sm:block ${navTextClass}`}>{user.name?.split(' ')[0]}</span>
-                    <ChevronDown size={14} className={`${navTextClass} transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
+              {/* Actions */}
+              {/* Actions */}
+              <div className="flex items-center gap-0.5 sm:gap-1">
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className={`p-2 md:p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}
+                >                <Search size={18} />
+                </button>
+                <button
+                  onClick={toggle}
+                  className={`hidden lg:flex p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}
+                >                {dark ? <Sun size={18} /> : <Moon size={18} />}
+                </button>
+                {user && (
+                  <Link
+                    to="/wishlist"
+                    className={`hidden lg:flex p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
+                    <Heart size={18} />
+                  </Link>
+                )}
+                <Link
+                  to="/cart"
+                  className={`relative p-2 md:p-2.5 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}
+                >                <ShoppingCart size={18} />
                   <AnimatePresence>
-                    {userMenuOpen && (
-                      <motion.div initial={{ opacity: 0, y: 8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.95 }} transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-52 bg-white dark:bg-[#1c1c1e] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 z-[100]">
-                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
-                          <p className="font-semibold text-sm text-[#111111] dark:text-[#f0ece4]">{user.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
-                        </div>
-                        {[
-                          { to: '/profile', icon: Settings, label: 'Profile' },
-                          ...(user.role !== 'admin' ? [{ to: '/orders', icon: Package, label: 'My Orders' }] : []),
-                        ].map(({ to, icon: Icon, label }) => (
-                          <Link key={to} to={to} className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gold hover:bg-gold/5 transition-colors">
-                            <Icon size={15} /> {label}
-                          </Link>
-                        ))}
-                        {user.role === 'admin' && (
-                          <Link to="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gold hover:bg-gold/5 transition-colors font-medium">
-                            <span className="text-xs bg-gold text-white px-1.5 py-0.5 rounded font-bold">A</span> Admin Panel
-                          </Link>
-                        )}
-                        <div className="border-t border-gray-100 dark:border-gray-800 mt-1 pt-1">
-                          <button onClick={async () => { await logout(); navigate('/'); }}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full">
-                            <LogOut size={15} /> Sign Out
-                          </button>
-                        </div>
-                      </motion.div>
+                    {cartCount > 0 && (
+                      <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                        className="absolute -top-0.5 -right-0.5 bg-gold text-white text-[10px] font-bold min-w-[18px] min-h-[18px] rounded-full flex items-center justify-center px-1">
+                        {cartCount}
+                      </motion.span>
                     )}
                   </AnimatePresence>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 ml-1">
-                  <Link to="/login" className={`text-sm font-medium px-4 py-2 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>Login</Link>
-                  <Link to="/register" className="text-sm font-semibold px-4 py-2 rounded-full bg-gold text-white hover:bg-[#b8924f] shadow-md shadow-gold/25 transition-all">Sign Up</Link>
-                </div>
-              )}
+                </Link>
+                <div className="hidden lg:flex items-center">
+                  {user ? (
+                    <div className="relative" ref={userMenuRef}>
+                      <button onClick={() => setUserMenuOpen(!userMenuOpen)}
+                        className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full bg-gold/10 hover:bg-gold/20 transition-all">
+                        <div className="w-7 h-7 bg-gold rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          {user.name?.[0]?.toUpperCase()}
+                        </div>
+                        <span className={`text-sm font-medium hidden sm:block ${navTextClass}`}>{user.name?.split(' ')[0]}</span>
+                        <ChevronDown size={14} className={`${navTextClass} transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence>
+                        {userMenuOpen && (
+                          <motion.div initial={{ opacity: 0, y: 8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.95 }} transition={{ duration: 0.15 }}
+                            className="absolute right-0 top-full mt-2 w-52 bg-white dark:bg-[#1c1c1e] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 z-[100]">
+                            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                              <p className="font-semibold text-sm text-[#111111] dark:text-[#f0ece4]">{user.name}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                            </div>
+                            {[
+                              { to: '/profile', icon: Settings, label: 'Profile' },
+                              ...(user.role !== 'admin' ? [{ to: '/orders', icon: Package, label: 'My Orders' }] : []),
+                            ].map(({ to, icon: Icon, label }) => (
+                              <Link key={to} to={to} className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gold hover:bg-gold/5 transition-colors">
+                                <Icon size={15} /> {label}
+                              </Link>
+                            ))}
+                            {user.role === 'admin' && (
+                              <Link to="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gold hover:bg-gold/5 transition-colors font-medium">
+                                <span className="text-xs bg-gold text-white px-1.5 py-0.5 rounded font-bold">A</span> Admin Panel
+                              </Link>
+                            )}
+                            <div className="border-t border-gray-100 dark:border-gray-800 mt-1 pt-1">
+                              <button onClick={async () => { await logout(); navigate('/'); }}
+                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full">
+                                <LogOut size={15} /> Sign Out
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 ml-1">
+                      <Link to="/login" className={`text-sm font-medium px-4 py-2 rounded-full transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>Login</Link>
+                      <Link to="/register" className="text-sm font-semibold px-4 py-2 rounded-full bg-gold text-white hover:bg-[#b8924f] shadow-md shadow-gold/25 transition-all">Sign Up</Link>
+                    </div>
+                  )}
 
-              <button className={`lg:hidden p-2.5 rounded-full transition-all hover:bg-gold/10 ${navTextClass}`} onClick={() => setOpen(!open)}>
-                {open ? <X size={20} /> : <Menu size={20} />}
-              </button>
+                </div>
+                <button className={`lg:hidden p-2.5 rounded-full transition-all hover:bg-gold/10 ${navTextClass}`} onClick={() => setOpen(!open)}>
+                  {open ? <X size={20} /> : <Menu size={20} />}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
         </div>
 
@@ -212,6 +222,89 @@ export default function Navbar() {
                     <div className="w-1.5 h-1.5 rounded-full bg-gold" /> {c}
                   </Link>
                 ))}
+                {/* Mobile Extra Actions */}
+<div className="border-t border-gray-100 dark:border-gray-800 mt-4 pt-4 space-y-1">
+
+  {/* Theme */}
+  <button
+    onClick={toggle}
+    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+  >
+    {dark ? <Sun size={18} /> : <Moon size={18} />}
+    Theme
+  </button>
+
+  {/* Wishlist */}
+  {user && (
+    <Link
+      to="/wishlist"
+      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+    >
+      <Heart size={18} />
+      Wishlist
+    </Link>
+  )}
+
+  {/* Logged In User */}
+  {user ? (
+    <>
+      <Link
+        to="/profile"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+      >
+        <Settings size={18} />
+        Profile
+      </Link>
+
+      {user.role !== 'admin' && (
+        <Link
+          to="/orders"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+        >
+          <Package size={18} />
+          My Orders
+        </Link>
+      )}
+
+      {user.role === 'admin' && (
+        <Link
+          to="/admin"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gold hover:bg-gold/10 transition-colors"
+        >
+          <Settings size={18} />
+          Admin Panel
+        </Link>
+      )}
+
+      <button
+        onClick={async () => {
+          await logout();
+          navigate('/');
+        }}
+        className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+      >
+        <LogOut size={18} />
+        Sign Out
+      </button>
+    </>
+  ) : (
+    <div className="grid grid-cols-2 gap-3 pt-2">
+      <Link
+        to="/login"
+        className="text-center py-2.5 rounded-xl border border-gold text-gold font-medium text-sm hover:bg-gold hover:text-white transition"
+      >
+        Login
+      </Link>
+
+      <Link
+        to="/register"
+        className="text-center py-2.5 rounded-xl bg-gold text-white font-medium text-sm hover:bg-[#b8924f] transition"
+      >
+        Sign Up
+      </Link>
+    </div>
+  )}
+</div>
               </div>
             </motion.div>
           )}
