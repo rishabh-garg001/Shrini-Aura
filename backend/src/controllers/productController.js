@@ -30,14 +30,29 @@ exports.getProduct = async (req, res, next) => {
 };
 
 // @POST /api/products (admin)
+
+
 exports.createProduct = async (req, res, next) => {
   try {
-    const images = req.files?.map(f => ({ url: f.path, public_id: f.filename })) || [];
-    const product = await Product.create({ ...req.body, images, ingredients: req.body.ingredients?.split(',') });
-    res.status(201).json(product);
-  } catch (err) { next(err); }
-};
+    const product = await Product.create({
+      ...req.body,
 
+      // use images coming from frontend JSON
+      images: req.body.images || [],
+
+      ingredients:
+        typeof req.body.ingredients === 'string'
+          ? req.body.ingredients
+              .split(',')
+              .map((i) => i.trim())
+          : req.body.ingredients || [],
+    });
+
+    res.status(201).json(product);
+  } catch (err) {
+    next(err);
+  }
+};
 // @PUT /api/products/:id (admin)
 exports.updateProduct = async (req, res, next) => {
   try {

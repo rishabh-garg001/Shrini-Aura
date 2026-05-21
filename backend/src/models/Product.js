@@ -30,11 +30,18 @@ const productSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Auto-generate slug
-productSchema.pre('save', function (next) {
+// productSchema.pre('save', function (next) {
+//   if (this.isModified('name')) {
+//     this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+//   }
+//   next();
+// });
+productSchema.pre('save', function () {
   if (this.isModified('name')) {
-    this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    this.slug = this.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
   }
-  next();
 });
-
 module.exports = mongoose.model('Product', productSchema);

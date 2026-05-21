@@ -248,17 +248,75 @@ export default function Products() {
                     <button onClick={clearAll} className="text-gold font-semibold hover:underline text-sm">Clear all filters</button>
                   </div>
                 )}
+{data?.pages > 1 && (
+<div className="flex items-center justify-center gap-3 mt-14 mb-6 flex-wrap">
+    
+    {/* Prev */}
+    <button
+      onClick={() =>
+        setPage((prev) =>
+          Math.max(prev - 1, 1)
+        )
+      }
+      disabled={page === 1}
+      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300
+        ${
+          page === 1
+            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
+            : 'bg-white dark:bg-[#1c1c1e] border border-gold text-gold hover:bg-gold hover:text-white hover:scale-105 hover:shadow-lg'
+        }`}
+    >
+      ← Prev
+    </button>
 
-                {data?.pages > 1 && (
-                  <div className="flex justify-center gap-2 mt-12">
-                    {[...Array(data.pages)].map((_, i) => (
-                      <button key={i} onClick={() => setPage(i + 1)}
-                        className={`w-10 h-10 rounded-full text-sm font-bold transition-all ${page === i + 1 ? 'bg-gold text-white shadow-lg shadow-gold/30' : 'bg-white dark:bg-[#1c1c1e] text-gray-600 dark:text-gray-400 border-2 border-gray-200 dark:border-gray-700 hover:border-gold hover:text-gold'}`}>
-                        {i + 1}
-                      </button>
-                    ))}
-                  </div>
-                )}
+    {/* Page Numbers */}
+    <div className="flex items-center gap-2">
+      {[...Array(data.pages)].map((_, i) => {
+        const pageNum = i + 1;
+
+        return (
+          <button
+            key={i}
+            onClick={() =>
+              setPage(pageNum)
+            }
+            className={`w-11 h-11 rounded-full text-sm font-bold transition-all duration-300
+              ${
+                page === pageNum
+                  ? 'bg-gold text-white shadow-lg shadow-gold/30 scale-110'
+                  : 'bg-white dark:bg-[#1c1c1e] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gold hover:text-gold hover:scale-105'
+              }`}
+          >
+            {pageNum}
+          </button>
+        );
+      })}
+    </div>
+
+    {/* Next */}
+    <button
+      onClick={() =>
+        setPage((prev) =>
+          Math.min(
+            prev + 1,
+            data.pages
+          )
+        )
+      }
+      disabled={
+        page === data.pages
+      }
+      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300
+        ${
+          page === data.pages
+            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
+            : 'bg-white dark:bg-[#1c1c1e] border border-gold text-gold hover:bg-gold hover:text-white hover:scale-105 hover:shadow-lg'
+        }`}
+    >
+      Next →
+    </button>
+  </div>
+)}
               </>
             )}
           </div>
