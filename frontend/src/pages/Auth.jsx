@@ -43,36 +43,69 @@ function AuthForm({ mode }) {
   return (
     <div className="min-h-screen bg-[#faf7f2] dark:bg-[#0a0a0a] flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <img
-          src="https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233907.png"
-          alt="luxury candle"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-12">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-gold rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">S</span>
-            </div>
-            <span className="font-serif text-xl font-bold text-white">ShriniAura</span>
-          </div>
-          <h2 className="font-serif text-3xl font-bold text-white mb-3 leading-tight">
-            Premium Handcrafted<br />Scented Candles
-          </h2>
-          <p className="text-gray-300 text-sm leading-relaxed">
-            Transform your space into a sanctuary of calm and luxury.
-          </p>
-          <div className="flex gap-6 mt-8">
-            {[['2000+', 'Customers'], ['5★', 'Rating'], ['100%', 'Natural']].map(([n, l]) => (
-              <div key={l}>
-                <p className="text-gold font-bold text-lg font-serif">{n}</p>
-                <p className="text-gray-400 text-xs">{l}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+{/* Left Panel */}
+{/* Left Hero Panel */}
+<div className="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-[#0f0f10]">
+
+  {/* Background Image */}
+  <img
+    src="https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233907.png"
+    alt="Luxury Candle"
+className="absolute inset-0 w-full h-full object-cover object-top opacity-90"  />
+
+  {/* Premium Gradient Overlay */}
+<div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-black/10" />
+  {/* Soft Glow */}
+  <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-gold/20 blur-3xl rounded-full" />
+  <div className="absolute top-10 right-10 w-52 h-52 bg-white/5 blur-3xl rounded-full" />
+
+  {/* Content */}
+<div className="relative z-10 flex flex-col justify-between h-full px-14 py-12">
+    {/* Logo */}
+    <Link to="/" className="flex items-center gap-3">
+      <div className="w-10 h-10 bg-gold rounded-full flex items-center justify-center shadow-lg shadow-gold/30">
+        <span className="text-white text-sm font-bold">S</span>
       </div>
+      <span className="font-serif text-2xl font-bold text-white tracking-wide">
+        ShriniAura
+      </span>
+    </Link>
+
+    {/* Bottom Hero Text */}
+   <div className="max-w-lg mb-10"> 
+      <p className="text-gold uppercase tracking-[0.25em] text-xs font-semibold mb-4">
+        Premium Luxury Candles
+      </p>
+
+      <h2 className="font-serif text-5xl font-bold text-white leading-tight mb-5">
+        Light Up Your Space With Elegance
+      </h2>
+
+      <p className="text-gray-300 text-base leading-relaxed mb-8">
+        Handcrafted scented candles designed to bring warmth,
+        calmness, and luxury into every corner of your home.
+      </p>
+
+      {/* Stats */}
+      <div className="flex items-center gap-10">
+        {[
+          ['2000+', 'Happy Customers'],
+          ['5★', 'Premium Rating'],
+          ['100%', 'Natural Wax'],
+        ].map(([n, l]) => (
+          <div key={l}>
+            <p className="text-gold text-2xl font-bold font-serif">
+              {n}
+            </p>
+            <p className="text-gray-400 text-sm">
+              {l}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* Right Panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
