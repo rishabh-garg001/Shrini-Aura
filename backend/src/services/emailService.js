@@ -1,35 +1,35 @@
 const nodemailer = require('nodemailer');
 
-const transporter =
-  nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: Number(
-      process.env.EMAIL_PORT
-    ),
-    secure:
-      Number(
-        process.env.EMAIL_PORT
-      ) === 465,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: Number(process.env.EMAIL_PORT),
+  secure: Number(process.env.EMAIL_PORT) === 465, // 587 => false, 465 => true
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  connectionTimeout: 15000,
+  greetingTimeout: 15000,
+  socketTimeout: 15000,
+});
 
-// check SMTP once on boot
+// SMTP check on server start
 transporter
   .verify()
-  .then(() =>
-    console.log(
-      '✅ Email server ready'
-    )
-  )
-  .catch((err) =>
-    console.error(
-      '❌ Email config failed:',
-      err.message
-    )
-  );
+  .then(() => {
+    console.log('✅ Email server ready');
+    console.log({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      user: process.env.EMAIL_USER,
+      passLoaded: !!process.env.EMAIL_PASS,
+    });
+  })
+  .catch((err) => {
+    console.error('❌ Email config failed:', err);
+  });
+
+exports.transporter = transporter;
 
 exports.sendOtp = async (
   email,
