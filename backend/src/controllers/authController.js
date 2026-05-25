@@ -31,18 +31,62 @@ exports.register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
-    // Delete any existing unverified account with this email
-    await User.deleteOne({ email, isVerified: false });
+    await User.deleteOne({
+      email,
+      isVerified: false,
+    });
 
-    if (await User.findOne({ email, isVerified: true })) 
-      return res.status(400).json({ message: 'Email already registered' });
+    const existingUser =
+      await User.findOne({
+        email,
+        isVerified: true,
+      });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({
+          message:
+            'Email already registered',
+        });
+    }
 
     const otp = generateOtp();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-    await User.create({ name, email, password, emailOtp: otp, emailOtpExpiry: otpExpiry });
-    await sendOtp(email, otp, 'verify').catch(err => console.error('OTP email failed:', err.message));
-    res.status(201).json({ message: 'OTP sent to your email. Please verify.', email });
-  } catch (err) { next(err); }
+    const otpExpiry = new Date(
+      Date.now() +
+        10 * 60 * 1000
+    );
+
+    await User.create({
+      name,
+      email,
+      password,
+      emailOtp: otp,
+      emailOtpExpiry:
+        otpExpiry,
+    });
+
+    // respond first
+    res.status(201).json({
+      message:
+        'Account created. Verify OTP.',
+      email,
+    });
+
+    // send mail after response
+    sendOtp(
+      email,
+      otp,
+      'verify'
+    ).catch((err) =>
+      console.error(
+        'OTP failed:',
+        err.message
+      )
+    );
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.verifyEmail = async (req, res, next) => {
