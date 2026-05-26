@@ -43,13 +43,13 @@ transporter
   .catch((err) => {
     console.error('❌ Email config failed:', err);
   });
-
-exports.transporter = transporter;
 const dns = require("dns");
 
 dns.lookup("smtp.gmail.com", (err, address) => {
   console.log("DNS TEST:", err || address);
 });
+exports.transporter = transporter;
+
 exports.sendOtp = async (
   email,
   otp,
