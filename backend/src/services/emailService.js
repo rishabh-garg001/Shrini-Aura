@@ -19,42 +19,41 @@ const dns = require("dns");
 // });
 // SMTP check on server start
 
+const nodemailer = require("nodemailer");
+const dns = require("dns");
+
 const transporter = nodemailer.createTransport({
-  host: "74.125.24.108", // smtp.gmail.com ka IPv4
-  port: 587,
-  secure: false,
-  requireTLS: true,
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  tls: {
-    rejectUnauthorized: false,
-    servername: "smtp.gmail.com", // TLS cert match
-  },
-  family: 4, // FORCE IPv4
   connectionTimeout: 30000,
   greetingTimeout: 30000,
   socketTimeout: 30000,
 });
+
 transporter
   .verify()
   .then(() => {
-    console.log('✅ Email server ready');
+    console.log("✅ Email server ready");
     console.log({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
+      host: "smtp.gmail.com",
+      port: 465,
       user: process.env.EMAIL_USER,
       passLoaded: !!process.env.EMAIL_PASS,
     });
   })
   .catch((err) => {
-    console.error('❌ Email config failed:', err);
+    console.error("❌ Email config failed:", err);
   });
 
 dns.lookup("smtp.gmail.com", (err, address) => {
   console.log("DNS TEST:", err || address);
 });
+
 exports.transporter = transporter;
 
 exports.sendOtp = async (
