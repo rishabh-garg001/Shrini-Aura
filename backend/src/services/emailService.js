@@ -45,7 +45,11 @@ transporter
   });
 
 exports.transporter = transporter;
+const dns = require("dns");
 
+dns.lookup("smtp.gmail.com", (err, address) => {
+  console.log("DNS TEST:", err || address);
+});
 exports.sendOtp = async (
   email,
   otp,
