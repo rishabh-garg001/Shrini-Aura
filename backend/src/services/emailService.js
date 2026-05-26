@@ -1,21 +1,27 @@
 const nodemailer = require('nodemailer');
 
 // const transporter = nodemailer.createTransport({
-//   host: process.env.EMAIL_HOST,
-//   port: Number(process.env.EMAIL_PORT),
-//   secure: Number(process.env.EMAIL_PORT) === 465, // 587 => false, 465 => true
+//   host: "smtp.gmail.com",
+//   port: 587,
+//   secure: false, // 587 ke liye false
+//   requireTLS: true,
 //   auth: {
 //     user: process.env.EMAIL_USER,
 //     pass: process.env.EMAIL_PASS,
 //   },
-//   connectionTimeout: 15000,
-//   greetingTimeout: 15000,
-//   socketTimeout: 15000,
+//   tls: {
+//     rejectUnauthorized: false,
+//   },
+//   connectionTimeout: 30000,
+//   greetingTimeout: 30000,
+//   socketTimeout: 30000,
 // });
+// SMTP check on server start
+
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "74.125.24.108", // smtp.gmail.com ka IPv4
   port: 587,
-  secure: false, // 587 ke liye false
+  secure: false,
   requireTLS: true,
   auth: {
     user: process.env.EMAIL_USER,
@@ -23,12 +29,13 @@ const transporter = nodemailer.createTransport({
   },
   tls: {
     rejectUnauthorized: false,
+    servername: "smtp.gmail.com", // TLS cert match
   },
+  family: 4, // FORCE IPv4
   connectionTimeout: 30000,
   greetingTimeout: 30000,
   socketTimeout: 30000,
 });
-// SMTP check on server start
 transporter
   .verify()
   .then(() => {
