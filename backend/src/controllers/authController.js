@@ -104,19 +104,67 @@ exports.verifyEmail = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// exports.resendOtp = async (req, res, next) => {
+//   try {
+//     const { email } = req.body;
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(404).json({ message: 'User not found' });
+//     if (user.isVerified) return res.status(400).json({ message: 'Email already verified' });
+//     const otp = generateOtp();
+//     await User.findByIdAndUpdate(user._id, { emailOtp: otp, emailOtpExpiry: new Date(Date.now() + 10 * 60 * 1000) });
+//     await sendOtp(email, otp, 'verify').catch(err => console.error('OTP email failed:', err.message));
+//     res.json({ message: 'OTP resent successfully' });
+//   } catch (err) { next(err); }
+// };
 exports.resendOtp = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    if (user.isVerified) return res.status(400).json({ message: 'Email already verified' });
-    const otp = generateOtp();
-    await User.findByIdAndUpdate(user._id, { emailOtp: otp, emailOtpExpiry: new Date(Date.now() + 10 * 60 * 1000) });
-    await sendOtp(email, otp, 'verify').catch(err => console.error('OTP email failed:', err.message));
-    res.json({ message: 'OTP resent successfully' });
-  } catch (err) { next(err); }
-};
 
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({
+        message: "Email already verified",
+      });
+    }
+
+    const otp = generateOtp();
+
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        emailOtp: otp,
+        emailOtpExpiry: new Date(
+          Date.now() + 10 * 60 * 1000
+        ),
+      }
+    );
+
+    // send mail
+    await sendOtp(
+      email,
+      otp,
+      "verify"
+    );
+
+    return res.json({
+      message:
+        "OTP resent successfully",
+    });
+  } catch (err) {
+    console.error(
+      "Resend OTP error:",
+      err.response?.data || err.message
+    );
+    next(err);
+  }
+};
 exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
