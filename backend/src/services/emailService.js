@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const dns = require("dns");
 
 // const transporter = nodemailer.createTransport({
 //   host: "smtp.gmail.com",
@@ -50,7 +51,6 @@ transporter
   .catch((err) => {
     console.error('❌ Email config failed:', err);
   });
-const dns = require("dns");
 
 dns.lookup("smtp.gmail.com", (err, address) => {
   console.log("DNS TEST:", err || address);
