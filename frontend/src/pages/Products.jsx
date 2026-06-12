@@ -100,7 +100,7 @@ export default function Products() {
               </div>
               {/* Filter Toggle */}
               <button
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={() => setShowFilters(true)}
                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-2 rounded-xl transition-all ${showFilters ? 'border-gold bg-gold text-white' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1c1c1e] text-[#111111] dark:text-[#f0ece4] hover:border-gold'}`}>
                 <SlidersHorizontal size={15} />
                 Filters
@@ -143,13 +143,123 @@ export default function Products() {
         <div className="flex gap-8">
           {/* Sidebar */}
           <AnimatePresence>
+  {showFilters && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/40 z-50 md:hidden"
+      onClick={() => setShowFilters(false)}
+    >
+      <motion.div
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ duration: 0.25 }}
+        onClick={(e) => e.stopPropagation()}
+        className="absolute right-0 top-0 h-full w-[85%] bg-white dark:bg-[#111111] overflow-y-auto p-5"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-bold text-lg text-[#111111] dark:text-white">
+            Filters
+          </h2>
+
+          <button
+            onClick={() => setShowFilters(false)}
+          >
+            <X size={22} />
+          </button>
+        </div>
+
+        {/* Categories */}
+        <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800 mb-5">
+          <h3 className="font-bold text-sm uppercase tracking-wider mb-4">
+            Category
+          </h3>
+
+          <div className="space-y-3">
+            {CATEGORIES.map((c) => {
+              const checked =
+                selectedCategories.includes(c);
+
+              return (
+                <label
+                  key={c}
+                  onClick={() =>
+                    toggleCategory(c)
+                  }
+                  className="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    readOnly
+                  />
+
+                  <span>{c}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Price Range */}
+        <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+          <h3 className="font-bold text-sm uppercase tracking-wider mb-4">
+            Price Range
+          </h3>
+
+          <div className="space-y-2">
+            {PRICE_RANGES.map((r) => {
+              const active =
+                minPrice === r.min &&
+                maxPrice === r.max;
+
+              return (
+                <button
+                  key={r.label}
+                  onClick={() => {
+                    setParam(
+                      "minPrice",
+                      active ? "" : r.min
+                    );
+                    setParam(
+                      "maxPrice",
+                      active ? "" : r.max
+                    );
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-xl ${
+                    active
+                      ? "bg-gold text-white"
+                      : "hover:bg-gold/10"
+                  }`}
+                >
+                  {r.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <button
+          onClick={() =>
+            setShowFilters(false)
+          }
+          className="w-full mt-6 bg-gold text-white py-3 rounded-xl font-semibold"
+        >
+          Apply Filters
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+          <AnimatePresence>
             {showFilters && (
               <motion.aside
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: 260 }}
                 exit={{ opacity: 0, width: 0 }}
-                className="shrink-0 overflow-hidden">
-                <div className="w-64 space-y-6">
+                 className="hidden md:block shrink-0 overflow-hidden">                <div className="w-64 space-y-6">
 
                   {/* Category Multi-Select */}
                   <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
@@ -234,7 +344,7 @@ export default function Products() {
           <div className="flex-1 min-w-0">
             {isLoading ? <Spinner /> : (
               <>
-                <div className={`grid gap-5 ${showFilters ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}>
+                  <div className="grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {data?.products?.map(p => <ProductCard key={p._id} product={p} />)}
                 </div>
 

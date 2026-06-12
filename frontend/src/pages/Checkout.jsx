@@ -72,7 +72,7 @@ export default function Checkout() {
               await api.post(`/orders/${data.order._id}/verify-payment`, response);
               clearCart();
               // Also clear cart in DB
-              await api.put('/users/cart', { items: [] }).catch(() => {});
+              await api.put('/users/cart', { items: [] }).catch(() => { });
               toast.success('Order placed successfully! 🎉');
               navigate(`/orders/${data.order._id}`);
             } catch { toast.error('Payment verification failed'); }
@@ -153,11 +153,28 @@ export default function Checkout() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex gap-2">
-                      <input value={couponInput} onChange={e => setCouponInput(e.target.value.toUpperCase())}
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        value={couponInput}
+                        onChange={e =>
+                          setCouponInput(
+                            e.target.value.toUpperCase()
+                          )
+                        }
                         placeholder="Enter coupon code (e.g. AURA10)"
-                        className="flex-1 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm bg-white dark:bg-[#2c2c2e] text-[#111111] dark:text-[#f0ece4] placeholder-gray-400 outline-none focus:border-gold transition-colors uppercase" />
-                      <Button type="button" variant="outline" onClick={applyCoupon} loading={couponLoading} size="md">Apply</Button>
+                        className="flex-1 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm bg-white dark:bg-[#2c2c2e] text-[#111111] dark:text-[#f0ece4] placeholder-gray-400 outline-none focus:border-gold transition-colors uppercase"
+                      />
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={applyCoupon}
+                        loading={couponLoading}
+                        size="md"
+                        className="w-full sm:w-auto"
+                      >
+                        Apply
+                      </Button>
                     </div>
                   )}
                   <p className="text-xs text-gray-400 mt-1">Try: AURA10, SHRINI15, WELCOME20</p>

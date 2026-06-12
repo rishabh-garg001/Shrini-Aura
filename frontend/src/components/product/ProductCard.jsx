@@ -81,8 +81,8 @@ export default function ProductCard({ product }) {
   const discount =
     product.discountPrice > 0
       ? Math.round(
-          (1 - product.discountPrice / product.price) * 100
-        )
+        (1 - product.discountPrice / product.price) * 100
+      )
       : 0;
 
   // SAFE IMAGE HANDLER
@@ -93,10 +93,10 @@ export default function ProductCard({ product }) {
     typeof currentImg === 'string'
       ? currentImg
       : currentImg?.url ||
-        (typeof firstImg === 'string'
-          ? firstImg
-          : firstImg?.url) ||
-        'https://images.unsplash.com/photo-1543512214-318c7553f230?w=600';
+      (typeof firstImg === 'string'
+        ? firstImg
+        : firstImg?.url) ||
+      'https://images.unsplash.com/photo-1543512214-318c7553f230?w=600';
 
   return (
     <motion.div
@@ -124,15 +124,13 @@ export default function ProductCard({ product }) {
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
-              >
+                className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"              >
                 <ChevronLeft size={16} />
               </button>
 
               <button
                 onClick={nextImage}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
-              >
+                className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110"              >
                 <ChevronRight size={16} />
               </button>
             </>
@@ -154,13 +152,12 @@ export default function ProductCard({ product }) {
           </div>
 
           {/* Action Buttons */}
-          <div className="absolute top-3 right-3 flex flex-col gap-2 translate-x-10 group-hover:translate-x-0 transition-transform duration-300">
-            <button
-              onClick={handleWishlist}
-              className="w-9 h-9 bg-white dark:bg-[#1c1c1e] rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-red-500 hover:scale-110 transition-all"
-            >
-              <Heart size={15} />
-            </button>
+          <div className="hidden md:flex absolute top-3 right-3 flex-col gap-2 translate-x-10 group-hover:translate-x-0 transition-transform duration-300">            <button
+            onClick={handleWishlist}
+            className="w-9 h-9 bg-white dark:bg-[#1c1c1e] rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-red-500 hover:scale-110 transition-all"
+          >
+            <Heart size={15} />
+          </button>
 
             <Link
               to={`/products/${product._id}`}
@@ -171,7 +168,7 @@ export default function ProductCard({ product }) {
           </div>
 
           {/* Add To Cart */}
-          <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+          <div className="hidden md:block absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
             <button
               onClick={handleAddToCart}
               className="w-full bg-gold text-white text-sm font-semibold py-3 flex items-center justify-center gap-2 hover:bg-[#b8924f] transition-colors"
