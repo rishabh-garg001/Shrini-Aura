@@ -7,11 +7,11 @@ import ProductCard from '../components/product/ProductCard';
 import { Button, SectionTitle, Spinner } from '../components/ui';
 
 const CATEGORIES = [
-  { name: 'Floral Bliss', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233707.png', desc: 'Romantic floral scents', emoji: '🌸' },
-  { name: 'Vanilla Dreams', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233826.png', desc: 'Warm & indulgent', emoji: '🍦' },
-  { name: 'Festive Lights', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png?updatedAt=1778350220560', desc: 'Celebrate every moment', emoji: '✨' },
-  { name: 'Ocean Breeze', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20223115.png?updatedAt=1778349753063', desc: 'Fresh coastal escape', emoji: '🌊' },
-  { name: 'Luxury Gold', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233907.png', desc: 'Premium & exclusive', emoji: '👑', category: 'Luxury Gold Collection' },
+  { name: 'T-Lights', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233707.png', desc: 'Romantic floral scents', emoji: '🌸' },
+  { name: 'Urlis', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233826.png', desc: 'Warm & indulgent', emoji: '🍦' },
+  { name: 'Plant Lovers', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/image.png?updatedAt=1778350220560', desc: 'Celebrate every moment', emoji: '✨' },
+  { name: 'Baby Shower', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20223115.png?updatedAt=1778349753063', desc: 'Fresh coastal escape', emoji: '🌊' },
+  { name: 'Jar Glass', img: 'https://ik.imagekit.io/rishaabh/shrini%20Photos/Screenshot%202026-05-09%20233907.png', desc: 'Premium & exclusive', emoji: '👑', category: 'Luxury Gold Collection' },
 ];
 
 const TESTIMONIALS = [

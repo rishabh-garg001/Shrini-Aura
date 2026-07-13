@@ -7,11 +7,11 @@ import api from '../../lib/api';
 import { Button, Spinner, Badge } from '../../components/ui';
 import toast from 'react-hot-toast';
 const CATEGORIES = [
-  'Floral Bliss',
-  'Vanilla Dreams',
-  'Festive Lights',
-  'Ocean Breeze',
-  'Luxury Gold Collection',
+  'T-Lights',
+  'Urlis',
+  'Plant Lovers',
+  'Baby Shower',
+  'Jar Glass',
 ];
 
 function ProductForm({ product, onClose }) {

@@ -180,8 +180,8 @@ npm run build
 ## 🎨 Candle Collections
 | Collection | Theme |
 |---|---|
-| Floral Bliss | Rose, Lavender, Jasmine |
-| Vanilla Dreams | Vanilla, Sandalwood, Caramel |
-| Festive Lights | Saffron, Marigold, Cinnamon |
-| Ocean Breeze | Sea Salt, Driftwood, Bergamot |
-| Luxury Gold Collection | Oud, Bulgarian Rose, Black Orchid |
+| T-Lights | Rose, Lavender, Jasmine |
+| Urlis | Vanilla, Sandalwood, Caramel |
+| Plant Lovers | Saffron, Marigold, Cinnamon |
+| Baby Shower | Sea Salt, Driftwood, Bergamot |
+| Jar Glass | Oud, Bulgarian Rose, Black Orchid |

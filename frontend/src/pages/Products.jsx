@@ -7,7 +7,7 @@ import api from '../lib/api';
 import ProductCard from '../components/product/ProductCard';
 import { Spinner } from '../components/ui';
 
-const CATEGORIES = ['Floral Bliss', 'Vanilla Dreams', 'Festive Lights', 'Ocean Breeze', 'Luxury Gold Collection'];
+const CATEGORIES = ['T-Lights', 'Urlis', 'Plant Lovers', 'Baby Shower', 'Jar Glass'];
 const SORTS = [
   { value: 'newest', label: 'Newest First' },
   { value: 'popular', label: 'Most Popular' },

@@ -6,7 +6,7 @@ const InstagramIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill
 const FacebookIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>;
 const TwitterIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>;
 
-const COLLECTIONS = ['Floral Bliss', 'Vanilla Dreams', 'Festive Lights', 'Ocean Breeze', 'Luxury Gold Collection'];
+const COLLECTIONS = ['T-Lights', 'Urlis', 'Plant Lovers', 'Baby Shower', 'Jar Glass'];
 const HELP_LINKS = ['FAQ', 'Shipping Policy', 'Return Policy', 'Track Order', 'Contact Us'];
 
 export default function Footer() {
@@ -62,15 +62,15 @@ export default function Footer() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-gray-400">
                 <MapPin size={14} className="text-gold shrink-0" />
-                <span>Mumbai, Maharashtra, India</span>
+                <span>Muzaffarnagar, Uttar Pradesh, India</span>
               </div>
               <div className="flex items-center gap-2 text-gray-400">
                 <Phone size={14} className="text-gold shrink-0" />
-                <span>+91 98765 43210</span>
+                <span>+91 8755916116</span>
               </div>
               <div className="flex items-center gap-2 text-gray-400">
                 <Mail size={14} className="text-gold shrink-0" />
-                <span>hello@shriniaura.com</span>
+                <span>makeindiagrowindia123@gmail.com</span>
               </div>
             </div>
           </div>

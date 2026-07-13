@@ -7,7 +7,7 @@ import { useCartStore } from '../../store/cartStore';
 import { useThemeStore } from '../../store/themeStore';
 import api from '../../lib/api';
 
-const CATEGORIES = ['Floral Bliss', 'Vanilla Dreams', 'Festive Lights', 'Ocean Breeze', 'Luxury Gold Collection'];
+const CATEGORIES = ['T-Lights', 'Urlis', 'Plant Lovers', 'Baby Shower', 'Jar Glass'];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
