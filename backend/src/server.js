@@ -46,6 +46,9 @@ app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use("/api/categories", require("./routes/categoryRoutes"));
+app.get("/api/test123", (req, res) => {
+  res.json({ ok: true, message: "Latest server.js is running" });
+});
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
 // Error handler
