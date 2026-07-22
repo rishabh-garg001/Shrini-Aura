@@ -6,7 +6,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
 import { useThemeStore } from '../../store/themeStore';
 import api from '../../lib/api';
-
+import { useQuery } from "@tanstack/react-query";
 const CATEGORIES = ['T-Lights', 'Urlis', 'Plant Lovers', 'Baby Shower', 'Jar Glass'];
 
 export default function Navbar() {
@@ -22,6 +22,11 @@ export default function Navbar() {
   const { dark, toggle } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: categoryData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () =>
+      api.get("/categories").then((res) => res.data),
+  });
   const searchRef = useRef(null);
   const suggestTimer = useRef(null);
 
@@ -102,13 +107,49 @@ export default function Navbar() {
                 </Link>
                 <div className="relative group">
                   <button className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-gold/10 hover:text-gold ${navTextClass}`}>
-                    Collections <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
+                    Collections <ChevronDown
+                      size={14}
+                      className="transition-transform duration-300 ease-out group-hover:rotate-180"
+                    />
                   </button>
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white dark:bg-[#1c1c1e] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                    {CATEGORIES.map(c => (
-                      <Link key={c} to={`/products?category=${encodeURIComponent(c)}`}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gold hover:bg-gold/5 transition-colors">
-                        <div className="w-1.5 h-1.5 rounded-full bg-gold/50" />{c}
+                  {/* <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white dark:bg-[#1c1c1e] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"> */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3
+w-64 max-h-[200px] overflow-y-auto
+bg-white dark:bg-[#1c1c1e]
+rounded-2xl
+shadow-[0_20px_60px_rgba(0,0,0,0.12)]
+dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)]
+border border-gray-100 dark:border-gray-800
+py-2
+opacity-0 invisible
+scale-95 translate-y-2
+origin-top
+group-hover:opacity-100
+group-hover:visible
+group-hover:scale-100
+group-hover:translate-y-0
+transition-all duration-300
+z-50">
+                    {categoryData?.categories?.map((category) => (
+                      <Link
+                        key={category._id}
+                        to={`/products?category=${category.slug}`}
+                        className="
+group
+flex items-center gap-3
+mx-2 px-4 py-3
+rounded-xl
+text-sm font-medium
+text-gray-700 dark:text-gray-300
+hover:bg-gold/10
+hover:text-gold
+hover:translate-x-1
+transition-all duration-200
+"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-gold/60 group-hover:scale-125 transition-transform duration-200" />
+                        {category.name}
+
                       </Link>
                     ))}
                   </div>
@@ -216,95 +257,108 @@ export default function Navbar() {
               <div className="px-4 py-5 space-y-1">
                 <Link to="/products" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors">All Candles</Link>
                 <p className="px-4 pt-2 pb-1 text-xs font-bold text-gray-400 uppercase tracking-widest">Collections</p>
-                {CATEGORIES.map(c => (
-                  <Link key={c} to={`/products?category=${encodeURIComponent(c)}`}
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:text-gold hover:bg-gold/5 transition-colors">
-                    <div className="w-1.5 h-1.5 rounded-full bg-gold" /> {c}
+                {categoryData?.categories?.map((category) => (
+                  <Link
+                    key={category._id}
+                    to={`/products?category=${category.slug}`}
+                    className="
+flex items-center gap-3
+mx-2 px-4 py-3
+rounded-xl
+text-sm font-medium
+text-gray-700 dark:text-gray-300
+hover:bg-gold/10
+hover:text-gold
+transition-all duration-200
+"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-gold/60" />
+                    {category.name}
                   </Link>
                 ))}
                 {/* Mobile Extra Actions */}
-<div className="border-t border-gray-100 dark:border-gray-800 mt-4 pt-4 space-y-1">
+                <div className="border-t border-gray-100 dark:border-gray-800 mt-4 pt-4 space-y-1">
 
-  {/* Theme */}
-  <button
-    onClick={toggle}
-    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
-  >
-    {dark ? <Sun size={18} /> : <Moon size={18} />}
-    Theme
-  </button>
+                  {/* Theme */}
+                  <button
+                    onClick={toggle}
+                    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+                  >
+                    {dark ? <Sun size={18} /> : <Moon size={18} />}
+                    Theme
+                  </button>
 
-  {/* Wishlist */}
-  {user && (
-    <Link
-      to="/wishlist"
-      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
-    >
-      <Heart size={18} />
-      Wishlist
-    </Link>
-  )}
+                  {/* Wishlist */}
+                  {user && (
+                    <Link
+                      to="/wishlist"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+                    >
+                      <Heart size={18} />
+                      Wishlist
+                    </Link>
+                  )}
 
-  {/* Logged In User */}
-  {user ? (
-    <>
-      <Link
-        to="/profile"
-        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
-      >
-        <Settings size={18} />
-        Profile
-      </Link>
+                  {/* Logged In User */}
+                  {user ? (
+                    <>
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+                      >
+                        <Settings size={18} />
+                        Profile
+                      </Link>
 
-      {user.role !== 'admin' && (
-        <Link
-          to="/orders"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
-        >
-          <Package size={18} />
-          My Orders
-        </Link>
-      )}
+                      {user.role !== 'admin' && (
+                        <Link
+                          to="/orders"
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#111111] dark:text-[#f0ece4] hover:bg-gold/10 hover:text-gold transition-colors"
+                        >
+                          <Package size={18} />
+                          My Orders
+                        </Link>
+                      )}
 
-      {user.role === 'admin' && (
-        <Link
-          to="/admin"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gold hover:bg-gold/10 transition-colors"
-        >
-          <Settings size={18} />
-          Admin Panel
-        </Link>
-      )}
+                      {user.role === 'admin' && (
+                        <Link
+                          to="/admin"
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gold hover:bg-gold/10 transition-colors"
+                        >
+                          <Settings size={18} />
+                          Admin Panel
+                        </Link>
+                      )}
 
-      <button
-        onClick={async () => {
-          await logout();
-          navigate('/');
-        }}
-        className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-      >
-        <LogOut size={18} />
-        Sign Out
-      </button>
-    </>
-  ) : (
-    <div className="grid grid-cols-2 gap-3 pt-2">
-      <Link
-        to="/login"
-        className="text-center py-2.5 rounded-xl border border-gold text-gold font-medium text-sm hover:bg-gold hover:text-white transition"
-      >
-        Login
-      </Link>
+                      <button
+                        onClick={async () => {
+                          await logout();
+                          navigate('/');
+                        }}
+                        className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <LogOut size={18} />
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <Link
+                        to="/login"
+                        className="text-center py-2.5 rounded-xl border border-gold text-gold font-medium text-sm hover:bg-gold hover:text-white transition"
+                      >
+                        Login
+                      </Link>
 
-      <Link
-        to="/register"
-        className="text-center py-2.5 rounded-xl bg-gold text-white font-medium text-sm hover:bg-[#b8924f] transition"
-      >
-        Sign Up
-      </Link>
-    </div>
-  )}
-</div>
+                      <Link
+                        to="/register"
+                        className="text-center py-2.5 rounded-xl bg-gold text-white font-medium text-sm hover:bg-[#b8924f] transition"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
@@ -342,7 +396,7 @@ export default function Navbar() {
                       <img src={p.images?.[0]?.url} alt={p.name} className="w-10 h-10 object-cover rounded-lg" />
                       <div>
                         <p className="text-sm font-semibold text-[#111111] dark:text-[#f0ece4]">{p.name}</p>
-                        <p className="text-xs text-gold">{p.category}</p>
+                        <p className="text-xs text-gold">{product.category?.name}</p>
                       </div>
                     </Link>
                   ))}

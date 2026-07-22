@@ -6,21 +6,31 @@ import { useForm } from 'react-hook-form';
 import api from '../../lib/api';
 import { Button, Spinner, Badge } from '../../components/ui';
 import toast from 'react-hot-toast';
-const CATEGORIES = [
-  'T-Lights',
-  'Urlis',
-  'Plant Lovers',
-  'Baby Shower',
-  'Jar Glass',
-];
+// const CATEGORIES = [
+//   'T-Lights',
+//   'Urlis',
+//   'Plant Lovers',
+//   'Baby Shower',
+//   'Jar Glass',
+// ];
 
 function ProductForm({ product, onClose }) {
-  const { register, handleSubmit } = useForm({
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const {
+    register,
+    handleSubmit,
+    setValue,
+  } = useForm({
     defaultValues: product || {},
   });
 
   const queryClient = useQueryClient();
-
+  const { data: categoryData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () =>
+      api.get("/categories").then((res) => res.data),
+  });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -79,7 +89,36 @@ function ProductForm({ product, onClose }) {
       prev.filter((_, i) => i !== index)
     );
   };
+ const createNewCategory = async () => {
+  if (!newCategory.trim()) {
+    return toast.error("Category name is required");
+  }
 
+  try {
+    const { data } = await api.post("/categories", {
+      name: newCategory,
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ["categories"],
+    });
+
+    // 👇 Newly created category automatically select ho jayegi
+//     setValue("category", data.category._id);
+// console.log(data.category._id);
+setTimeout(() => {
+  setValue("category", data.category._id);
+}, 300);
+    setShowCategoryModal(false);
+    setNewCategory("");
+
+    toast.success("Category created!");
+  } catch (err) {
+    toast.error(
+      err.response?.data?.message || "Failed to create category"
+    );
+  }
+};
   const onSubmit = async (data) => {
     setLoading(true);
 
@@ -115,7 +154,7 @@ function ProductForm({ product, onClose }) {
     } catch (err) {
       toast.error(
         err.response?.data?.message ||
-          'Failed'
+        'Failed'
       );
     } finally {
       setLoading(false);
@@ -234,11 +273,10 @@ function ProductForm({ product, onClose }) {
             )}
 
             <label
-              className={`flex items-center justify-center gap-2 border-2 border-dashed rounded-xl py-4 cursor-pointer transition-colors ${
-                uploading
-                  ? 'opacity-50 border-gray-300'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-gold'
-              }`}
+              className={`flex items-center justify-center gap-2 border-2 border-dashed rounded-xl py-4 cursor-pointer transition-colors ${uploading
+                ? 'opacity-50 border-gray-300'
+                : 'border-gray-300 dark:border-gray-600 hover:border-gold'
+                }`}
             >
               <input
                 type="file"
@@ -259,12 +297,12 @@ function ProductForm({ product, onClose }) {
             </label>
           </div>
 
-                    {fields.map((f) => (
+          {fields.map((f) => (
             <div
               key={f.name}
               className={
                 f.name === 'name' ||
-                f.name ===
+                  f.name ===
                   'shortDescription'
                   ? 'col-span-2'
                   : ''
@@ -323,17 +361,27 @@ function ProductForm({ product, onClose }) {
               )}
               className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm bg-white dark:bg-gray-900 outline-none focus:border-gold"
             >
-              {CATEGORIES.map(
-                (c) => (
-                  <option
-                    key={c}
-                    value={c}
-                  >
-                    {c}
-                  </option>
-                )
-              )}
+              {categoryData?.categories?.map((category) => (
+                <option
+                  key={category._id}
+                  value={category._id}
+                >
+                  {category.name}
+                </option>
+              ))}
+
+
             </select>
+
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(true)}
+                className="text-sm text-gold font-medium hover:underline"
+              >
+                + Add New Category
+              </button>
+            </div>
           </div>
 
           {/* Checkbox */}
@@ -383,6 +431,45 @@ function ProductForm({ product, onClose }) {
               Cancel
             </Button>
           </div>
+
+          {showCategoryModal && (
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[100]">
+              <div className="bg-white dark:bg-gray-900 rounded-xl p-6 w-96">
+                <h2 className="text-lg font-semibold mb-4">
+                  Add New Category
+                </h2>
+
+                <input
+                  type="text"
+                  placeholder="Category Name"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  className="w-full border rounded-lg px-3 py-2 mb-4"
+                />
+
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCategoryModal(false);
+                      setNewCategory("");
+                    }}
+                    className="px-4 py-2 border rounded-lg"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={createNewCategory}
+                    className="px-4 py-2 bg-gold text-white rounded-lg"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </form>
       </motion.div>
     </div>
@@ -394,9 +481,9 @@ function ProductForm({ product, onClose }) {
 =========================== */
 
 export default function AdminProducts() {
-    const [modal, setModal] = useState(null);
+  const [modal, setModal] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
-  
+
 
   const queryClient =
     useQueryClient();
@@ -519,15 +606,13 @@ export default function AdminProducts() {
                     </td>
 
                     <td className="px-4 py-3 text-gray-500">
-                      {
-                        p.category
-                      }
+                      {p.category?.name}
                     </td>
 
                     <td className="px-4 py-3">
                       ₹
                       {p.discountPrice >
-                      0
+                        0
                         ? p.discountPrice
                         : p.price}
                     </td>
@@ -536,10 +621,10 @@ export default function AdminProducts() {
                       <Badge
                         color={
                           p.stock >
-                          10
+                            10
                             ? 'green'
                             : p.stock >
-                                0
+                              0
                               ? 'gold'
                               : 'red'
                         }
@@ -582,11 +667,11 @@ export default function AdminProducts() {
                         </button>
 
                         <button
-  onClick={() => setDeleteModal(p)}
-  className="p-1.5 hover:text-red-500 transition-colors"
->
-  <Trash2 size={16} />
-</button>
+                          onClick={() => setDeleteModal(p)}
+                          className="p-1.5 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -602,7 +687,7 @@ export default function AdminProducts() {
           <ProductForm
             product={
               modal ===
-              'create'
+                'create'
                 ? null
                 : modal
             }
@@ -613,80 +698,80 @@ export default function AdminProducts() {
             }
           />
         )}
-        
-  {deleteModal && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6"
-      >
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-11 h-11 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
-            <Trash2 size={20} />
-          </div>
 
-          <div>
-            <h2 className="text-lg font-bold">
-              Delete Product
-            </h2>
-            <p className="text-sm text-gray-500">
-              This action cannot be undone.
-            </p>
-          </div>
-        </div>
-
-        {/* Product */}
-        <div className="border rounded-xl p-3 mb-6 flex items-center gap-3">
-          <img
-            src={deleteModal.images?.[0]?.url}
-            alt={deleteModal.name}
-            className="w-14 h-14 rounded-lg object-cover"
-          />
-          <div>
-            <p className="font-semibold">
-              {deleteModal.name}
-            </p>
-            <p className="text-sm text-gray-500">
-              {deleteModal.category}
-            </p>
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex gap-3">
-          <button
-            onClick={() =>
-              setDeleteModal(null)
-            }
-            className="flex-1 py-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+        {deleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
           >
-            Cancel
-          </button>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6"
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-11 h-11 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+                  <Trash2 size={20} />
+                </div>
 
-          <button
-            onClick={() => {
-              deleteMutation.mutate(
-                deleteModal._id
-              );
-              setDeleteModal(null);
-            }}
-            className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition"
-          >
-            Delete
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                <div>
+                  <h2 className="text-lg font-bold">
+                    Delete Product
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+
+              {/* Product */}
+              <div className="border rounded-xl p-3 mb-6 flex items-center gap-3">
+                <img
+                  src={deleteModal.images?.[0]?.url}
+                  alt={deleteModal.name}
+                  className="w-14 h-14 rounded-lg object-cover"
+                />
+                <div>
+                  <p className="font-semibold">
+                    {deleteModal.name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+  {deleteModal.category?.name || deleteModal.category}
+</p>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() =>
+                    setDeleteModal(null)
+                  }
+                  className="flex-1 py-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={() => {
+                    deleteMutation.mutate(
+                      deleteModal._id
+                    );
+                    setDeleteModal(null);
+                  }}
+                  className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

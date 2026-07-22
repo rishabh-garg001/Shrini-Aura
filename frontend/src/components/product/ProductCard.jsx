@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate  } from 'react-router-dom';
 import {
   Heart,
   ShoppingCart,
@@ -18,7 +18,7 @@ import toast from 'react-hot-toast';
 export default function ProductCard({ product }) {
   const addItem = useCartStore((s) => s.addItem);
   const { user } = useAuthStore();
-
+const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
 
   const nextImage = (e) => {
@@ -159,12 +159,16 @@ export default function ProductCard({ product }) {
             <Heart size={15} />
           </button>
 
-            <Link
-              to={`/products/${product._id}`}
-              className="w-9 h-9 bg-white dark:bg-[#1c1c1e] rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-gold hover:scale-110 transition-all"
-            >
-              <Eye size={15} />
-            </Link>
+           <button
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/products/${product._id}`);
+  }}
+  className="w-9 h-9 bg-white dark:bg-[#1c1c1e] rounded-full shadow-lg flex items-center justify-center text-gray-500 hover:text-gold hover:scale-110 transition-all"
+>
+  <Eye size={15} />
+</button>
           </div>
 
           {/* Add To Cart */}
@@ -182,7 +186,7 @@ export default function ProductCard({ product }) {
         {/* Info */}
         <div className="p-4">
           <p className="text-xs font-bold text-gold uppercase tracking-wider mb-1.5">
-            {product.category}
+            {product.category?.name}
           </p>
 
           <h3 className="font-serif font-bold text-[#111111] dark:text-[#f0ece4] mb-1 line-clamp-1 text-base leading-snug">

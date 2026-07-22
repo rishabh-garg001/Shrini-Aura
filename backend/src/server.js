@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const createIndexes = require('./utils/createIndexes');
 const errorHandler = require('./middleware/errorHandler');
-
+const categoryRoutes = require('./routes/categoryRoutes');
 const app = express();
 
 // Connect DB
@@ -45,7 +45,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
-
+app.use("/api/categories", require("./routes/categoryRoutes"));
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
 // Error handler

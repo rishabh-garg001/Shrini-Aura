@@ -5,8 +5,18 @@ exports.getProducts = async (req, res, next) => {
   try {
     const { category, search, sort, minPrice, maxPrice, page = 1, limit = 12 } = req.query;
     const query = { isActive: true };
+    const Category = require("../models/category.model");
 
-    if (category) query.category = category.includes(',') ? { $in: category.split(',') } : category;
+if (category) {
+  const slugs = category.split(",");
+
+  const categories = await Category.find({
+    slug: { $in: slugs },
+  }).select("_id");
+  query.category = {
+    $in: categories.map(c => c._id),
+  };
+}
     if (search) query.$or = [{ name: { $regex: search, $options: 'i' } }, { description: { $regex: search, $options: 'i' } }];
     if (minPrice || maxPrice) query.price = { ...(minPrice && { $gte: Number(minPrice) }), ...(maxPrice && { $lte: Number(maxPrice) }) };
 
@@ -14,16 +24,21 @@ exports.getProducts = async (req, res, next) => {
     const sortBy = sortMap[sort] || '-createdAt';
 
     const total = await Product.countDocuments(query);
-    const products = await Product.find(query).sort(sortBy).skip((page - 1) * limit).limit(Number(limit));
+    const products = await Product.find(query)
+      .populate("category")
+      .sort(sortBy)
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
 
     res.json({ products, total, page: Number(page), pages: Math.ceil(total / limit) });
   } catch (err) { next(err); }
 };
-
 // @GET /api/products/:id
 exports.getProduct = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id).populate('reviews.user', 'name avatar');
+    const product = await Product.findById(req.params.id)
+      .populate("category")
+      .populate("reviews.user", "name avatar");
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (err) { next(err); }
@@ -43,8 +58,8 @@ exports.createProduct = async (req, res, next) => {
       ingredients:
         typeof req.body.ingredients === 'string'
           ? req.body.ingredients
-              .split(',')
-              .map((i) => i.trim())
+            .split(',')
+            .map((i) => i.trim())
           : req.body.ingredients || [],
     });
 

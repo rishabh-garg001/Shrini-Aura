@@ -17,7 +17,11 @@ function useRecentlyViewed(productId, productData) {
 
   useEffect(() => {
     if (!productId || !productData) return;
-    const stored = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || '[]');
+   const stored = [
+  ...new Set(
+    JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || "[]")
+  )
+];
     const updated = [productId, ...stored.filter(id => id !== productId)].slice(0, 5);
     localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(updated));
     setRecentIds(updated.filter(id => id !== productId));
@@ -35,16 +39,18 @@ export default function ProductDetail() {
   const { user } = useAuthStore();
 
   const { data: product, isLoading, refetch } = useQuery({
+    
     queryKey: ['product', id],
     queryFn: () => api.get(`/products/${id}`).then(r => r.data),
   });
+  console.log("Category Object:", product?.category);
 
   const recentIds = useRecentlyViewed(id, product);
 
   // Related products (same category)
   const { data: relatedData } = useQuery({
-    queryKey: ['related', product?.category, id],
-    queryFn: () => api.get('/products', { params: { category: product.category, limit: 4 } }).then(r => r.data),
+   queryKey: ['related', product?.category?.slug, id],
+    queryFn: () => api.get('/products', { params: {  category: product.category?.slug, limit: 4 } }).then(r => r.data),
     enabled: !!product?.category,
   });
   const related = relatedData?.products?.filter(p => p._id !== id) || [];
@@ -54,8 +60,32 @@ export default function ProductDetail() {
     queryKey: ['recent-viewed', recentIds.join(',')],
     queryFn: async () => {
       if (!recentIds.length) return [];
-      const results = await Promise.all(recentIds.map(rid => api.get(`/products/${rid}`).then(r => r.data).catch(() => null)));
-      return results.filter(Boolean);
+      const results = await Promise.all(
+  recentIds.map(async (rid) => {
+    try {
+      const { data } = await api.get(`/products/${rid}`);
+      return data;
+    } catch {
+      // Remove invalid id from localStorage
+      const stored = [
+  ...new Set(
+    JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || "[]")
+  )
+];
+
+      const updated = stored.filter(id => id !== rid);
+
+      localStorage.setItem(
+        RECENTLY_VIEWED_KEY,
+        JSON.stringify(updated)
+      );
+
+      return null;
+    }
+  })
+);
+
+return results.filter(Boolean);
     },
     enabled: recentIds.length > 0,
   });
@@ -104,9 +134,12 @@ export default function ProductDetail() {
             <ArrowLeft size={14} /> All Candles
           </Link>
           <span>/</span>
-          <Link to={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-gold transition-colors">
-            {product.category}
-          </Link>
+         <Link
+         to={`/products?category=${encodeURIComponent(product.category?.slug)}`}
+  className="hover:text-gold transition-colors"
+>
+  {product.category?.name}
+</Link>
           <span>/</span>
           <span className="text-[#111111] dark:text-[#f0ece4] font-medium line-clamp-1">{product.name}</span>
         </div>
@@ -134,7 +167,7 @@ export default function ProductDetail() {
           {/* Info */}
           <div className="space-y-6">
             <div>
-              <Badge color="gold">{product.category}</Badge>
+              <Badge color="gold">{product.category?.name}</Badge>
               <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#111111] dark:text-[#f0ece4] mt-3 mb-3 leading-tight">{product.name}</h1>
               <div className="flex items-center gap-3">
                 <StarRating rating={product.rating} size={16} />

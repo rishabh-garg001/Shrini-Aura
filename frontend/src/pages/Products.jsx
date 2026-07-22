@@ -36,13 +36,20 @@ export default function Products() {
   const maxPrice = searchParams.get('maxPrice') || '';
 
   const { data, isLoading } = useQuery({
-    queryKey: ['products', { categoryParam, search, sort, minPrice, maxPrice, page }],
-    queryFn: () => api.get('/products', {
+    queryKey: ['products', { categoryParam, search, sort, minPrice, maxPrice, page }],    queryFn: () => api.get('/products', {
       params: { category: categoryParam, search, sort, minPrice, maxPrice, page, limit: 12 },
     }).then(r => r.data),
     keepPreviousData: true,
   });
-
+  const { data: categoryData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => api.get("/categories").then(res => res.data),
+  });
+ const categoryMap =
+  categoryData?.categories?.reduce((acc, cat) => {
+    acc[cat.slug] = cat;
+    return acc;
+  }, {}) || {};
   const setParam = (key, value) => {
     const p = new URLSearchParams(searchParams);
     if (value) p.set(key, value); else p.delete(key);
@@ -78,10 +85,12 @@ export default function Products() {
               </p>
               <h1 className="font-serif text-3xl md:text-4xl font-bold text-[#111111] dark:text-[#f0ece4]">
                 {selectedCategories.length === 1
-                  ? selectedCategories[0]
-                  : selectedCategories.length > 1
-                  ? `${selectedCategories.length} Collections`
-                  : search ? `"${search}"` : 'All Candles'}
+  ? categoryMap[selectedCategories[0]]?.name || selectedCategories[0]
+  : selectedCategories.length > 1
+  ? `${selectedCategories.length} Collections`
+  : search
+  ? `"${search}"`
+  : "All Candles"}
               </h1>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                 {data?.total || 0} candles found
@@ -100,42 +109,19 @@ export default function Products() {
               </div>
               {/* Filter Toggle */}
               <button
-                onClick={() => setShowFilters(true)}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-2 rounded-xl transition-all ${showFilters ? 'border-gold bg-gold text-white' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1c1c1e] text-[#111111] dark:text-[#f0ece4] hover:border-gold'}`}>
+                onClick={() => setShowFilters(prev => !prev)}
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-2 rounded-xl transition-all ${showFilters
+                  ? "border-gold bg-gold text-white"
+                  : "border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1c1c1e] hover:border-gold"
+                  }`}
+              >
                 <SlidersHorizontal size={15} />
-                Filters
-                {hasFilters && (
-                  <span className="w-5 h-5 bg-white/30 text-current rounded-full text-[10px] font-bold flex items-center justify-center">
-                    {selectedCategories.length + (minPrice || maxPrice ? 1 : 0)}
-                  </span>
-                )}
+                {showFilters ? "Hide Filters" : "Filters"}
               </button>
             </div>
           </motion.div>
 
-          {/* Active Filter Chips */}
-          <AnimatePresence>
-            {hasFilters && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                {selectedCategories.map(cat => (
-                  <span key={cat} className="inline-flex items-center gap-1.5 px-3 py-1 bg-gold/10 text-gold text-xs font-semibold rounded-full border border-gold/20">
-                    {cat}
-                    <button onClick={() => removeCategory(cat)}><X size={12} /></button>
-                  </span>
-                ))}
-                {(minPrice || maxPrice) && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gold/10 text-gold text-xs font-semibold rounded-full border border-gold/20">
-                    ₹{minPrice || '0'} – ₹{maxPrice || '∞'}
-                    <button onClick={() => { setParam('minPrice', ''); setParam('maxPrice', ''); }}><X size={12} /></button>
-                  </span>
-                )}
-                <button onClick={clearAll} className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium">
-                  Clear all
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+         
         </div>
       </div>
 
@@ -143,126 +129,189 @@ export default function Products() {
         <div className="flex gap-8">
           {/* Sidebar */}
           <AnimatePresence>
-  {showFilters && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/40 z-50 md:hidden"
-      onClick={() => setShowFilters(false)}
-    >
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ duration: 0.25 }}
-        onClick={(e) => e.stopPropagation()}
-        className="absolute right-0 top-0 h-full w-[85%] bg-white dark:bg-[#111111] overflow-y-auto p-5"
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/40 z-[100] md:hidden"
+                onClick={() => setShowFilters(false)}
+              >
+                <motion.div
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ duration: 0.25 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute right-0 top-0 h-full w-[92%] max-w-sm
+             bg-white dark:bg-[#111111]
+             overflow-y-auto px-5 pt-16 pb-6"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="pt-2">
+                    <h2 className="font-bold text-lg text-[#111111] dark:text-white">
+                      Filters
+                    </h2>
+</div>
+                    <button
+                      onClick={() => setShowFilters(false)}
+                    >
+                      <X size={22} />
+                    </button>
+                  </div>
+
+                  {/* Categories */}
+           <div className="bg-white dark:bg-[#1c1c1e] rounded-xl border border-gray-200 dark:border-gray-700 mb-5 overflow-hidden">
+  <div className="p-4">
+    <h3 className="font-bold text-sm uppercase tracking-wider">
+      Category
+    </h3>
+  </div>
+
+  <div className="px-4 pb-4 h-64 overflow-y-auto custom-scrollbar">
+                    {/* <div className="space-y-2"> */}
+                  {[...(categoryData?.categories || [])]
+  .sort((a, b) => {
+    const aSelected = selectedCategories.includes(a.slug);
+    const bSelected = selectedCategories.includes(b.slug);
+
+    if (aSelected === bSelected) return a.name.localeCompare(b.name);
+
+    return aSelected ? -1 : 1;
+  })
+  .map(category => {
+    const checked = selectedCategories.includes(category.slug);
+
+                        return (
+                          <label
+  key={category._id}
+  onClick={() => toggleCategory(category.slug)}
+  className="flex items-center gap-3 cursor-pointer rounded-lg px-2 py-2 hover:bg-gold/5 transition-colors"
+>
+  <div
+    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+      checked
+        ? "bg-gold border-gold"
+        : "border-gray-300"
+    }`}
+  >
+    {checked && (
+      <svg
+        className="w-3 h-3 text-white"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        viewBox="0 0 24 24"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-bold text-lg text-[#111111] dark:text-white">
-            Filters
-          </h2>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M5 13l4 4L19 7"
+        />
+      </svg>
+    )}
+  </div>
 
-          <button
-            onClick={() => setShowFilters(false)}
-          >
-            <X size={22} />
-          </button>
-        </div>
+  <span
+    className={`text-sm transition-colors ${
+      checked
+        ? "text-gold font-medium"
+        : "text-gray-700 dark:text-gray-300"
+    }`}
+  >
+    {category.name}
+  </span>
+</label>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-        {/* Categories */}
-        <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800 mb-5">
-          <h3 className="font-bold text-sm uppercase tracking-wider mb-4">
-            Category
-          </h3>
+                  {/* Price Range */}
+                  <div className="bg-white dark:bg-[#1c1c1e] rounded-xl p-4 border border-gray-200 dark:border-gray-700 mb-5">
+                    <h3 className="font-bold text-sm uppercase tracking-wider mb-4">
+                      Price Range
+                    </h3>
 
-          <div className="space-y-3">
-            {CATEGORIES.map((c) => {
-              const checked =
-                selectedCategories.includes(c);
+                    <div className="space-y-2">
+                      {PRICE_RANGES.map((r) => {
+                        const active =
+                          minPrice === r.min &&
+                          maxPrice === r.max;
 
-              return (
-                <label
-                  key={c}
-                  onClick={() =>
-                    toggleCategory(c)
-                  }
-                  className="flex items-center gap-3 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    readOnly
-                  />
+                        return (
+                          <button
+                            key={r.label}
+                            onClick={() => {
+                              setParam(
+                                "minPrice",
+                                active ? "" : r.min
+                              );
+                              setParam(
+                                "maxPrice",
+                                active ? "" : r.max
+                              );
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-xl ${active
+                              ? "bg-gold text-white"
+                              : "hover:bg-gold/10"
+                              }`}
+                          >
+                            {r.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-                  <span>{c}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Price Range */}
-        <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
-          <h3 className="font-bold text-sm uppercase tracking-wider mb-4">
-            Price Range
-          </h3>
-
-          <div className="space-y-2">
-            {PRICE_RANGES.map((r) => {
-              const active =
-                minPrice === r.min &&
-                maxPrice === r.max;
-
-              return (
-                <button
-                  key={r.label}
-                  onClick={() => {
-                    setParam(
-                      "minPrice",
-                      active ? "" : r.min
-                    );
-                    setParam(
-                      "maxPrice",
-                      active ? "" : r.max
-                    );
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-xl ${
-                    active
-                      ? "bg-gold text-white"
-                      : "hover:bg-gold/10"
-                  }`}
-                >
-                  {r.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <button
-          onClick={() =>
-            setShowFilters(false)
-          }
-          className="w-full mt-6 bg-gold text-white py-3 rounded-xl font-semibold"
-        >
-          Apply Filters
-        </button>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                  <div className="sticky bottom-0 bg-white dark:bg-[#111111] pt-4 pb-2">
+  <button
+    onClick={() => setShowFilters(false)}
+    className="
+w-full
+bg-gold
+text-white
+py-3
+rounded-xl
+font-semibold
+shadow-md
+hover:shadow-lg
+hover:scale-[1.02]
+active:scale-95
+transition-all
+duration-300
+"
+  >
+    Apply Filters
+  </button>
+</div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <AnimatePresence>
             {showFilters && (
               <motion.aside
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: 260 }}
                 exit={{ opacity: 0, width: 0 }}
-                 className="hidden md:block shrink-0 overflow-hidden">                <div className="w-64 space-y-6">
+                className="hidden md:block shrink-0 overflow-hidden">                <div className="w-64 space-y-6">
 
                   {/* Category Multi-Select */}
-                  <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+                  <div className="
+bg-white
+dark:bg-[#1c1c1e]
+rounded-xl
+p-4
+border
+border-gray-200
+dark:border-gray-700
+shadow-sm
+hover:shadow-md
+transition-shadow
+duration-300
+mb-5
+">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-bold text-sm text-[#111111] dark:text-[#f0ece4] uppercase tracking-wider">Category</h3>
                       {selectedCategories.length > 0 && (
@@ -273,34 +322,70 @@ export default function Products() {
                       )}
                     </div>
                     <div className="space-y-2">
-                      {CATEGORIES.map(c => {
-                        const checked = selectedCategories.includes(c);
-                        return (
-                          <label key={c} onClick={() => toggleCategory(c)}
-                            className="flex items-center gap-3 cursor-pointer group">
-                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${checked ? 'bg-gold border-gold' : 'border-gray-300 dark:border-gray-600 group-hover:border-gold'}`}>
-                              {checked && (
-                                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                  <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                              )}
-                            </div>
-                            <span className={`text-sm transition-colors leading-tight ${checked ? 'text-gold font-semibold' : 'text-gray-600 dark:text-gray-400 group-hover:text-gold'}`}>
-                              {c}
-                            </span>
-                          </label>
-                        );
-                      })}
+                     {categoryData?.categories?.map(category => {
+  const checked = selectedCategories.includes(category.slug);
+
+  return (
+    <label
+      key={category._id}
+      onClick={() => toggleCategory(category.slug)}
+      className="flex items-center gap-3 cursor-pointer group"
+    >
+      <div
+        className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${
+          checked
+            ? "bg-gold border-gold"
+            : "border-gray-300 dark:border-gray-600 group-hover:border-gold"
+        }`}
+      >
+        {checked && (
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path
+              d="M1 4L3.5 6.5L9 1"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </div>
+
+      <span
+        className={`text-sm transition-colors leading-tight ${
+          checked
+            ? "text-gold font-semibold"
+            : "text-gray-600 dark:text-gray-400 group-hover:text-gold"
+        }`}
+      >
+        {category.name}
+      </span>
+    </label>
+  );
+})}
                     </div>
                     {selectedCategories.length > 0 && (
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                        {selectedCategories.length} of {CATEGORIES.length} selected
+                     {selectedCategories.length} of {categoryData?.categories?.length || 0} selected
                       </p>
                     )}
                   </div>
 
                   {/* Price Filter */}
-                  <div className="bg-white dark:bg-[#1c1c1e] rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+                  <div className="
+bg-white
+dark:bg-[#1c1c1e]
+rounded-xl
+p-4
+border
+border-gray-200
+dark:border-gray-700
+shadow-sm
+hover:shadow-md
+transition-shadow
+duration-300
+mb-5
+">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-bold text-sm text-[#111111] dark:text-[#f0ece4] uppercase tracking-wider">Price Range</h3>
                       {(minPrice || maxPrice) && (
@@ -344,7 +429,7 @@ export default function Products() {
           <div className="flex-1 min-w-0">
             {isLoading ? <Spinner /> : (
               <>
-                  <div className="grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {data?.products?.map(p => <ProductCard key={p._id} product={p} />)}
                 </div>
 
@@ -358,75 +443,72 @@ export default function Products() {
                     <button onClick={clearAll} className="text-gold font-semibold hover:underline text-sm">Clear all filters</button>
                   </div>
                 )}
-{data?.pages > 1 && (
-<div className="flex items-center justify-center gap-3 mt-14 mb-6 flex-wrap">
-    
-    {/* Prev */}
-    <button
-      onClick={() =>
-        setPage((prev) =>
-          Math.max(prev - 1, 1)
-        )
-      }
-      disabled={page === 1}
-      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300
-        ${
-          page === 1
-            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
-            : 'bg-white dark:bg-[#1c1c1e] border border-gold text-gold hover:bg-gold hover:text-white hover:scale-105 hover:shadow-lg'
-        }`}
-    >
-      ← Prev
-    </button>
+                {data?.pages > 1 && (
+                  <div className="flex items-center justify-center gap-3 mt-14 mb-6 flex-wrap">
 
-    {/* Page Numbers */}
-    <div className="flex items-center gap-2">
-      {[...Array(data.pages)].map((_, i) => {
-        const pageNum = i + 1;
+                    {/* Prev */}
+                    <button
+                      onClick={() =>
+                        setPage((prev) =>
+                          Math.max(prev - 1, 1)
+                        )
+                      }
+                      disabled={page === 1}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300
+        ${page === 1
+                          ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
+                          : 'bg-white dark:bg-[#1c1c1e] border border-gold text-gold hover:bg-gold hover:text-white hover:scale-105 hover:shadow-lg'
+                        }`}
+                    >
+                      ← Prev
+                    </button>
 
-        return (
-          <button
-            key={i}
-            onClick={() =>
-              setPage(pageNum)
-            }
-            className={`w-11 h-11 rounded-full text-sm font-bold transition-all duration-300
-              ${
-                page === pageNum
-                  ? 'bg-gold text-white shadow-lg shadow-gold/30 scale-110'
-                  : 'bg-white dark:bg-[#1c1c1e] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gold hover:text-gold hover:scale-105'
-              }`}
-          >
-            {pageNum}
-          </button>
-        );
-      })}
-    </div>
+                    {/* Page Numbers */}
+                    <div className="flex items-center gap-2">
+                      {[...Array(data.pages)].map((_, i) => {
+                        const pageNum = i + 1;
 
-    {/* Next */}
-    <button
-      onClick={() =>
-        setPage((prev) =>
-          Math.min(
-            prev + 1,
-            data.pages
-          )
-        )
-      }
-      disabled={
-        page === data.pages
-      }
-      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300
-        ${
-          page === data.pages
-            ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
-            : 'bg-white dark:bg-[#1c1c1e] border border-gold text-gold hover:bg-gold hover:text-white hover:scale-105 hover:shadow-lg'
-        }`}
-    >
-      Next →
-    </button>
-  </div>
-)}
+                        return (
+                          <button
+                            key={i}
+                            onClick={() =>
+                              setPage(pageNum)
+                            }
+                            className={`w-11 h-11 rounded-full text-sm font-bold transition-all duration-300
+              ${page === pageNum
+                                ? 'bg-gold text-white shadow-lg shadow-gold/30 scale-110'
+                                : 'bg-white dark:bg-[#1c1c1e] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gold hover:text-gold hover:scale-105'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Next */}
+                    <button
+                      onClick={() =>
+                        setPage((prev) =>
+                          Math.min(
+                            prev + 1,
+                            data.pages
+                          )
+                        )
+                      }
+                      disabled={
+                        page === data.pages
+                      }
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300
+        ${page === data.pages
+                          ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 cursor-not-allowed'
+                          : 'bg-white dark:bg-[#1c1c1e] border border-gold text-gold hover:bg-gold hover:text-white hover:scale-105 hover:shadow-lg'
+                        }`}
+                    >
+                      Next →
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
