@@ -396,7 +396,7 @@ transition-all duration-200
                       <img src={p.images?.[0]?.url} alt={p.name} className="w-10 h-10 object-cover rounded-lg" />
                       <div>
                         <p className="text-sm font-semibold text-[#111111] dark:text-[#f0ece4]">{p.name}</p>
-                        <p className="text-xs text-gold">{product.category?.name}</p>
+                        <p className="text-xs text-gold">{p.category?.name}</p>
                       </div>
                     </Link>
                   ))}
